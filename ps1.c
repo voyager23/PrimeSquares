@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <complex.h>
+#include <locale.h>
+#include <glib.h>
 
 const double primes[] =
 { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 
@@ -70,6 +72,8 @@ int main(int argc, char **argv)
 	gprime *head = NULL;
 	gprime *new_gprime;
 	
+	setlocale(LC_ALL,"");
+	
 	printf("sizeof(primes) = %i\n", sizeof(primes));
 	printf("sizeof(double) = %i\n", sizeof(double));
 	
@@ -86,24 +90,29 @@ int main(int argc, char **argv)
 			if (pItem!=NULL) {
 			printf ("%.1f^2 + %.1f^2 = %.1f is in the primes array.\n",p,q,s);
 			found += 1;
+			
 			/*
 			 * allocate space for l_list struct of complex double (gaussian prime) & next_ptr
 			 */
 			 new_gprime = (gprime*)malloc(sizeof(gprime));
 			 /*
-			 * assign real amd imag values
-			 */
+			  * assign real amd imag values
+			  */
 			 new_gprime->prime = CMPLX(p,q);
 			 /* 
 			  * add to head of l_list of g_primes
-			 */
+			  */
 			 new_gprime->next = head;
 			 head = new_gprime;
+			 /*
+			  * end list code
+			  */
+			 
 			}
 		}
 	}
 	printf("Found %i results.\n",found);
-	printf("Search space = %i\n",(found*(found-1)*(found-2)*(found-3)));
+	printf("Search space = %'d\n",(found*(found-1)*(found-2)*(found-3)));
 	// Iterate over the l_list of gprimes and print contents
 	// Reuse the new_prime pointer
 	new_gprime = head;
@@ -113,6 +122,11 @@ int main(int argc, char **argv)
 		new_gprime = new_gprime->next;
 	}
 	printf("Found %i items in l_list.\n",found);
+	
+	// Do 4 index search of l_list to compute unique sums of 4 primes
+	// 
+	
+	// =====Cleanup Code=====
 	// Free the list of gprimes
 	gprime *list_ptr, *save_ptr;
 	list_ptr = head;
@@ -123,7 +137,7 @@ int main(int argc, char **argv)
 	}
 	printf("List cleared.\n");
 	
-	// done
+	// =====Done=====
 	return 0;
 }
 
