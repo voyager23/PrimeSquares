@@ -61,7 +61,6 @@ int comparedouble (const void * a, const void * b)
 
 typedef struct gp {
 	double complex prime;
-	struct gp *next;
 } gprime;
 
 int main(int argc, char **argv)
@@ -69,17 +68,12 @@ int main(int argc, char **argv)
 	const double limit=20.0;
 	double p,q,si,s;
 	int found = 0;
-	gprime *head = NULL;
-	gprime *new_gprime;
+	
+	GSList *head = NULL;
+	GSList *working;
+	gprime *gprime_ptr;
 	
 	setlocale(LC_ALL,"");
-	
-	printf("sizeof(primes) = %i\n", sizeof(primes));
-	printf("sizeof(double) = %i\n", sizeof(double));
-	
-	double complex dc;
-	dc = CMPLX(2.9,2.9);
-	printf("creal(dc) = %f\n", creal(dc));
 	
 	for(p=0; p<limit; p++) {
 		si = p*p;
@@ -88,53 +82,36 @@ int main(int argc, char **argv)
 			int * pItem;
 			pItem = (int*) bsearch(&s, primes, (sizeof(primes)/sizeof(double)), sizeof(double), comparedouble);
 			if (pItem!=NULL) {
-			printf ("%.1f^2 + %.1f^2 = %.1f is in the primes array.\n",p,q,s);
+			printf ("%.1f^2 + %.1f^2 = %.1f Sum is in the normal primes array.\n",p,q,s);
 			found += 1;
-			
-			/*
-			 * allocate space for l_list struct of complex double (gaussian prime) & next_ptr
-			 */
-			 new_gprime = (gprime*)malloc(sizeof(gprime));
-			 /*
-			  * assign real amd imag values
-			  */
-			 new_gprime->prime = CMPLX(p,q);
-			 /* 
-			  * add to head of l_list of g_primes
-			  */
-			 new_gprime->next = head;
-			 head = new_gprime;
-			 /*
-			  * end list code
-			  */
-			 
+			// glib singly linked list
+			gprime_ptr = (gpointer)malloc(sizeof(gprime));
+			gprime_ptr->prime = CMPLX(p,q);
+			head = g_slist_prepend(head,(gpointer)gprime_ptr);			 
 			}
 		}
 	}
 	printf("Found %i results.\n",found);
 	printf("Search space = %'d\n",(found*(found-1)*(found-2)*(found-3)));
-	// Iterate over the l_list of gprimes and print contents
+	// Iterate over the g_slist of gprimes and print contents
 	// Reuse the new_prime pointer
-	new_gprime = head;
+	working = head;
 	found = 0;
-	while(new_gprime != NULL) {
+	while(working != NULL) {
 		found += 1;
-		new_gprime = new_gprime->next;
+		gprime_ptr = (gprime*)working->data;
+		printf ("%.1f^2 + %.1f^2 \tis in the g_slist.\n", creal(gprime_ptr->prime), cimag(gprime_ptr->prime));
+		working = g_slist_next(working);
 	}
 	printf("Found %i items in l_list.\n",found);
+	printf("g_slist_length() returned %i items.\n", g_slist_length(head));
 	
-	// Do 4 index search of l_list to compute unique sums of 4 primes
-	// 
+	// test code selecting specific items from g_slist
+	printf ("%.1f^2 + %.1f^2 \tis in the g_slist.\n", creal( ((gprime*)g_slist_nth_data(head,found-1))->prime), cimag( ((gprime*)g_slist_nth_data(head,found-1))->prime));
 	
 	// =====Cleanup Code=====
 	// Free the list of gprimes
-	gprime *list_ptr, *save_ptr;
-	list_ptr = head;
-	while(list_ptr != NULL) {
-		save_ptr = list_ptr->next;
-		free(list_ptr);
-		list_ptr = save_ptr;
-	}
+	g_slist_free_full(head,free);	
 	printf("List cleared.\n");
 	
 	// =====Done=====
