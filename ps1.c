@@ -59,9 +59,9 @@ int comparedouble (const void * a, const void * b)
   return ( *(double*)a - *(double*)b );
 }
 
-typedef struct gp {
-	double complex prime;
-} gprime;
+typedef double complex gprime;
+
+#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))
 
 int main(int argc, char **argv)
 {
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 			found += 1;
 			// glib singly linked list
 			gprime_ptr = (gpointer)malloc(sizeof(gprime));
-			gprime_ptr->prime = CMPLX(p,q);
+			*gprime_ptr = CMPLX(p,q);
 			head = g_slist_prepend(head,(gpointer)gprime_ptr);			 
 			}
 		}
@@ -100,14 +100,22 @@ int main(int argc, char **argv)
 	while(working != NULL) {
 		found += 1;
 		gprime_ptr = (gprime*)working->data;
-		printf ("%.1f^2 + %.1f^2 \tis in the g_slist.\n", creal(gprime_ptr->prime), cimag(gprime_ptr->prime));
+		printf ("%.1f^2 + %.1f^2 \tis in the g_slist.\n", creal(*gprime_ptr), cimag(*gprime_ptr));
 		working = g_slist_next(working);
 	}
 	printf("Found %i items in l_list.\n",found);
 	printf("g_slist_length() returned %i items.\n", g_slist_length(head));
 	
 	// test code selecting specific items from g_slist
-	printf ("%.1f^2 + %.1f^2 \tis in the g_slist.\n", creal( ((gprime*)g_slist_nth_data(head,found-1))->prime), cimag( ((gprime*)g_slist_nth_data(head,found-1))->prime));
+	int n = 43;
+	gprime temp;
+	if((n >= 0)&&(n<found)) {
+		temp = nth_gprime(head,n);
+		printf ("%.1f^2 + %.1f^2 \tis in the g_slist.\n", creal(temp), cimag(temp));
+	} else {
+		printf("Requested position (%d) outside list.\n",n);		
+	}
+	
 	
 	// =====Cleanup Code=====
 	// Free the list of gprimes
