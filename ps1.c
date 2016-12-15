@@ -65,7 +65,7 @@ typedef double complex gprime;
 
 int main(int argc, char **argv)
 {
-	const double limit=20.0;
+	const double limit=16.0;
 	double p,q,si,s;
 	int found = 0;
 	
@@ -74,6 +74,8 @@ int main(int argc, char **argv)
 	gprime *gprime_ptr;
 	
 	setlocale(LC_ALL,"");
+	
+	printf("Using %2.0f primes from list.\n",limit);
 	
 	for(p=0; p<limit; p++) {
 		si = p*p;
@@ -92,9 +94,9 @@ int main(int argc, char **argv)
 		}
 	}
 	printf("Found %i results.\n",found);
-	printf("Search space = %'d\n",(found*(found-1)*(found-2)*(found-3)));
+	printf("4_index search space = %'d\n",(found*(found-1)*(found-2)*(found-3)));
+	
 	// Iterate over the g_slist of gprimes and print contents
-	// Reuse the new_prime pointer
 	working = head;
 	found = 0;
 	while(working != NULL) {
@@ -106,16 +108,16 @@ int main(int argc, char **argv)
 	printf("Found %i items in l_list.\n",found);
 	printf("g_slist_length() returned %i items.\n", g_slist_length(head));
 	
-	// test code selecting specific items from g_slist
-	int n = 43;
-	gprime temp;
-	if((n >= 0)&&(n<found)) {
-		temp = nth_gprime(head,n);
-		printf ("%.1f^2 + %.1f^2 \tis in the g_slist.\n", creal(temp), cimag(temp));
-	} else {
-		printf("Requested position (%d) outside list.\n",n);		
+	// Do 4 index search over the g_slist of gprimes
+	int a,b,c,d;
+	gprime s0, s1, s2, s3;
+	int list_size = g_slist_length(head);
+	for(a = 0; a < list_size; ++a) {
+		s0 = nth_gprime(head,a);
+		for(b = 0; b < list_size; ++b) {
+			s1 = s0 + nth_gprime(head,b);
+		}
 	}
-	
 	
 	// =====Cleanup Code=====
 	// Free the list of gprimes

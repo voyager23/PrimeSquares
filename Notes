@@ -1,0 +1,12 @@
+	
+	// test code selecting specific items from g_slist
+	int n = 43;
+	gprime temp;
+	if((n >= 0)&&(n<found)) {
+		temp = nth_gprime(head,n);
+		printf ("%.1f^2 + %.1f^2 \tis in the g_slist.\n", creal(temp), cimag(temp));
+	} else {
+		printf("Requested position (%d) outside list.\n",n);		
+	}
+	
+	
