@@ -29,6 +29,17 @@
 #include <locale.h>
 #include <glib.h>
 
+typedef double complex gprime;
+
+typedef struct fps {
+	complex double total;
+	complex double p0,p1,p2,p3;
+} FourPrimeSum;
+
+// Convenience Macros
+#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))
+#define prt_gprime(a) printf("(%.1f,%.1f)", creal(a), cimag(a))
+
 const double primes[] =
 { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 
 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 
@@ -59,10 +70,34 @@ int comparedouble (const void * a, const void * b)
   return ( *(double*)a - *(double*)b );
 }
 
-typedef double complex gprime;
+gint compare_gprime(gconstpointer a, gconstpointer b)
+{
+	double a_real,b_real,a_imag,b_imag;
+	
+	a_real = creal(*(double complex*)a);
+	b_real = creal(*(double complex*)b);
+	if(a_real < b_real) return -1;
+	if(a_real > b_real) return +1;
+	// test imag components
+	a_imag = cimag(*(double complex*)a);
+	b_imag = cimag(*(double complex*)b);
+	if(a_imag < b_imag) return -1;
+	if(a_imag > b_imag) return +1;
+	// Equal return 0;
+	return 0;
+}
 
-#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))
+gint compare_fps(gconstpointer a, gconstpointer b) {
+	FourPrimeSum a_fps, b_fps;
+	a_fps = (*(FourPrimeSum*)a);
+	b_fps = (*(FourPrimeSum*)b);
+	double complex *a_total, *b_total;
+	a_total = &(a_fps.total);
+	b_total = &(b_fps.total);
+	return compare_gprime((gconstpointer)a_total, (gconstpointer)b_total);
+}
 
+//-----Main-----
 int main(int argc, char **argv)
 {
 	const double limit=16.0;
@@ -84,7 +119,7 @@ int main(int argc, char **argv)
 			int * pItem;
 			pItem = (int*) bsearch(&s, primes, (sizeof(primes)/sizeof(double)), sizeof(double), comparedouble);
 			if (pItem!=NULL) {
-			printf ("%.1f^2 + %.1f^2 = %.1f Sum is in the normal primes array.\n",p,q,s);
+			printf ("%.1f^2 + %.1f^2 \t= %4.0f  Sum of squares is normal prime.\n",p,q,s);
 			found += 1;
 			// glib singly linked list
 			gprime_ptr = (gpointer)malloc(sizeof(gprime));
@@ -96,13 +131,21 @@ int main(int argc, char **argv)
 	printf("Found %i results.\n",found);
 	printf("4_index search space = %'d\n",(found*(found-1)*(found-2)*(found-3)));
 	
+	
+	// write code to sort list of gprimes in ascending order based on magnitude of real and imag components
+	// GCompareFunc() returns int, (gconstpointer a, gconstpointer b)
+	printf("Sorting list...");
+	head = g_slist_sort(head,compare_gprime);
+	printf("complete.\n");
+	
+	
 	// Iterate over the g_slist of gprimes and print contents
 	working = head;
 	found = 0;
 	while(working != NULL) {
 		found += 1;
 		gprime_ptr = (gprime*)working->data;
-		printf ("%.1f^2 + %.1f^2 \tis in the g_slist.\n", creal(*gprime_ptr), cimag(*gprime_ptr));
+		printf ("%.1f^2 + %.1f^2   \tis in the g_slist.\n", creal(*gprime_ptr), cimag(*gprime_ptr));
 		working = g_slist_next(working);
 	}
 	printf("Found %i items in l_list.\n",found);
@@ -112,17 +155,45 @@ int main(int argc, char **argv)
 	int a,b,c,d;
 	gprime s0, s1, s2, s3;
 	int list_size = g_slist_length(head);
+	GSList *Sums = NULL;
+	FourPrimeSum *fps_ptr;
+	
 	for(a = 0; a < list_size; ++a) {
 		s0 = nth_gprime(head,a);
-		for(b = 0; b < list_size; ++b) {
+		for(b = a + 1; b < list_size; ++b) {
+			// we can add complex doubles using '+' operator
 			s1 = s0 + nth_gprime(head,b);
-		}
-	}
-	
+			for(c = b + 1; c < list_size; ++c) {
+				s2 = s1 + nth_gprime(head,c);
+				for(d = c + 1; d < list_size; ++d) {
+					s3 = s2 + nth_gprime(head,d);
+					// Now have final sum (s3) and 4 gprimes referenced by a,b,c and d
+					// Allocate, assign values and prepend
+					fps_ptr = (FourPrimeSum*)malloc(sizeof(FourPrimeSum));
+					fps_ptr->total = s3;
+					fps_ptr->p0 = nth_gprime(head,a);
+					fps_ptr->p1 = nth_gprime(head,b);
+					fps_ptr->p2 = nth_gprime(head,c);
+					fps_ptr->p3 = nth_gprime(head,d);
+					Sums = g_slist_prepend(Sums, fps_ptr);
+				} // for d ...
+			} // for c ...
+		} // for b ...
+	} // for a ...
+
+	// show list size
+	printf("Items in Sums list = %i\n", g_slist_length(Sums));
+	// now sort list by total
+	Sums = g_slist_sort(Sums,compare_fps);
+	printf("Items in Sums list = %i\n", g_slist_length(Sums));
+
 	// =====Cleanup Code=====
 	// Free the list of gprimes
 	g_slist_free_full(head,free);	
-	printf("List cleared.\n");
+	printf("Gprimes list cleared.\n");
+	
+	g_slist_free_full(Sums,free);
+	printf("Sums list cleared.\n");
 	
 	// =====Done=====
 	return 0;

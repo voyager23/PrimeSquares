@@ -1,4 +1,8 @@
 	
+	// TEST CODE
+	prt_gprime(s1); printf(" = "); prt_gprime(s0); printf(" + "); prt_gprime(nth_gprime(head,b)); printf("\n");
+	// END TEST
+	
 	// test code selecting specific items from g_slist
 	int n = 43;
 	gprime temp;
