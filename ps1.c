@@ -23,22 +23,7 @@
  */
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <complex.h>
-#include <locale.h>
-#include <glib.h>
-
-typedef double complex gprime;
-
-typedef struct fps {
-	complex double total;
-	complex double p0,p1,p2,p3;
-} FourPrimeSum;
-
-// Convenience Macros
-#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))
-#define prt_gprime(a) printf("(%.1f,%.1f)", creal(a), cimag(a))
+#include "ps1.h"
 
 const double primes[] =
 { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 
@@ -100,7 +85,7 @@ gint compare_fps(gconstpointer a, gconstpointer b) {
 //-----Main-----
 int main(int argc, char **argv)
 {
-	const double limit=16.0;
+	const double limit=10.0;
 	double p,q,si,s;
 	int found = 0;
 	
@@ -186,6 +171,28 @@ int main(int argc, char **argv)
 	// now sort list by total
 	Sums = g_slist_sort(Sums,compare_fps);
 	printf("Items in Sums list = %i\n", g_slist_length(Sums));
+	
+	// now iterate over and print list of sums.
+	working = Sums;					// GSList *working
+	double complex current_total = CMPLX(0.0,0.0);
+	int blk_size = 0,count = 0;
+	while(working != NULL) {
+		fps_ptr = working->data;	// FourPrimeSum *fsp_ptr
+		if(compare_gprime(&(fps_ptr->total),&current_total) > 0) {
+			current_total = fps_ptr->total;
+			printf("(%d) =====================\n", blk_size);
+			blk_size = 0;
+		}
+		++blk_size;
+		printf("%d: ",count); ++count;
+		printf("(%.1f + %.1f) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
+		printf("(%.1f + %.1f) + ", creal(fps_ptr->p0), cimag(fps_ptr->p0));
+		printf("(%.1f + %.1f) + ", creal(fps_ptr->p1), cimag(fps_ptr->p1));
+		printf("(%.1f + %.1f) + ", creal(fps_ptr->p2), cimag(fps_ptr->p2));
+		printf("(%.1f + %.1f)\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
+		working = g_slist_next(working);
+	}
+		
 
 	// =====Cleanup Code=====
 	// Free the list of gprimes
