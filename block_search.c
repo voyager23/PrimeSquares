@@ -21,8 +21,10 @@
  * 
  */
 
+#define ARRAY array2
 
 #include "ps1.h"
+
 // Sum to (14.0,24.0)
 const double complex array1[][4] =
 {
@@ -64,34 +66,75 @@ int main(int argc, char ** argv) {
 	const gprime * b;
 	const gprime * c;
 	const gprime * d;
-	const gprime * sentinel = &array1[12][3];
+	const gprime * sentinel = &ARRAY[12][3];
 	
-	gprime pairs[8];
+	gprime pairs[16];
 	gprime *p, *q;
-	
-	int count = 0;
-	for(a = &array1[0][0]; a < sentinel; a += 4) {
+		
+	// set up pointers to start of blocks of 4
+	for(a = &ARRAY[0][0]; a < sentinel; a += 4) {
 		for(b = a + 4; b < sentinel; b += 4) {
-			prt_gprime(*a); printf("\t");
-			prt_gprime(*b); printf("\n");
-			++count;
+			// load 8 gprimes into a test array and scan for duplicates.
 			p = pairs;
 			q = p+4;
-			for(int x=0;x<4;x++) { *(p+x) = *(a+x); *(q+x) = *(b+x); }
+			for(int x=0;x<4;++x) { *(p+x) = *(a+x); *(q+x) = *(b+x); }
 			int dups = 0;
 			for(p = pairs; p < &pairs[8]; p++) {
 				for(q = p+1; q < &pairs[8]; q++) {
 					if((*p)==(*q)) {
 						++dups;
-						printf("Dups: "); prt_gprime(*p); printf(" => "); prt_gprime(*q); printf("\n");
+						// debug output
+						// printf("Dups: "); prt_gprime(*p); printf(" => "); prt_gprime(*q); printf("\n");
 					}
 				}
 			}
-			printf("Dups: %i\n",dups);
+			
+			// If only 1 duplicate found, scan below b for a line which gives exactly 2 duplicate pairs
+			if(dups == 1) {
+				printf("Pairs1: %i\n",dups);
+				for(c = b + 4; c < sentinel; c += 4) {
+					// The pairs array has the first two lines so update by adding a third line
+					q = pairs + 8;
+					for(int x=0;x<4;++x) *(q+x) = *(c+x);
+					dups = 0;
+					for(p = pairs; p < &pairs[12]; p++) {
+						for(q = p+1; q < &pairs[12]; q++) {
+							if((*p)==(*q)) {
+								++dups;
+								// debug output
+								// printf("Dups: "); prt_gprime(*p); printf(" => "); prt_gprime(*q); printf("\n");
+							}
+						}
+					}
+				}
+				if(dups==2) {
+					printf("===>>>Pairs2: %i\n",dups);
+					// Finally scan below c looking for a total of 4 pairs
+					
+					for(d = c + 4; d < sentinel; d += 4) {
+						// The pairs array has the first three lines so update by adding a fourth line
+						q = pairs + 12;
+						for(int x=0;x<4;++x) *(q+x) = *(d+x);
+						dups = 0;
+						for(p = pairs; p < &pairs[16]; p++) {
+							for(q = p+1; q < &pairs[16]; q++) {
+								if((*p)==(*q)) {
+									++dups;
+									// debug output
+									// printf("Dups: "); prt_gprime(*p); printf(" => "); prt_gprime(*q); printf("\n");
+								}
+							}
+						}
+					}
+					
+					printf("Final pair count: %i\n",dups);
+										
+				}
+			}
 		}
 		printf("\n");
+		
 	}
-	printf("Count: %i\n",count);
-	return 0;
+	printf("Scan of array complete.\n");
 }
 
