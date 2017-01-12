@@ -85,7 +85,7 @@ gint compare_fps(gconstpointer a, gconstpointer b) {
 //-----Main-----
 int main(int argc, char **argv)
 {
-	const double limit=10.0;
+	const double limit=15.0;
 	double p,q,si,s;
 	int found = 0;
 	
@@ -201,11 +201,11 @@ int main(int argc, char **argv)
 				// scan and print the block of sums
 				while(blk_start != working) {
 					fps_ptr = blk_start->data;
-					printf("(%.1f + %.1f) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
-					printf("(%.1f + %.1f) + ", creal(fps_ptr->p0), cimag(fps_ptr->p0));
-					printf("(%.1f + %.1f) + ", creal(fps_ptr->p1), cimag(fps_ptr->p1));
-					printf("(%.1f + %.1f) + ", creal(fps_ptr->p2), cimag(fps_ptr->p2));
-					printf("(%.1f + %.1f)\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
+					printf("(%.1f + %.1fi) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
+					printf("(%.1f + %.1fi) + ", creal(fps_ptr->p0), cimag(fps_ptr->p0));
+					printf("(%.1f + %.1fi) + ", creal(fps_ptr->p1), cimag(fps_ptr->p1));
+					printf("(%.1f + %.1fi) + ", creal(fps_ptr->p2), cimag(fps_ptr->p2));
+					printf("(%.1f + %.1fi)\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
 					blk_start = g_slist_next(blk_start);
 				} // while blk_start
 			} // if blk_size
