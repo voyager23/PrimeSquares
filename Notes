@@ -1,4 +1,25 @@
 	
+	// now iterate over and print list of sums.
+	working = Sums;					// GSList *working
+	double complex current_total = CMPLX(0.0,0.0);
+	int blk_size = 0,count = 0;
+	while(working != NULL) {
+		fps_ptr = working->data;	// FourPrimeSum *fsp_ptr
+		if(compare_gprime(&(fps_ptr->total),&current_total) > 0) {
+			current_total = fps_ptr->total;
+			printf("(%d) =====================\n", blk_size);
+			blk_size = 0;
+		}
+		++blk_size;
+		printf("%d: ",count); ++count;
+		printf("(%.1f + %.1f) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
+		printf("(%.1f + %.1f) + ", creal(fps_ptr->p0), cimag(fps_ptr->p0));
+		printf("(%.1f + %.1f) + ", creal(fps_ptr->p1), cimag(fps_ptr->p1));
+		printf("(%.1f + %.1f) + ", creal(fps_ptr->p2), cimag(fps_ptr->p2));
+		printf("(%.1f + %.1f)\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
+		working = g_slist_next(working);
+	}
+		
 	// TEST CODE
 	prt_gprime(s1); printf(" = "); prt_gprime(s0); printf(" + "); prt_gprime(nth_gprime(head,b)); printf("\n");
 	// END TEST

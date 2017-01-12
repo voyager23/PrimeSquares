@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 	int found = 0;
 	
 	GSList *head = NULL;
-	GSList *working;
+	GSList *working, *blk_start;
 	gprime *gprime_ptr;
 	
 	setlocale(LC_ALL,"");
@@ -172,28 +172,46 @@ int main(int argc, char **argv)
 	Sums = g_slist_sort(Sums,compare_fps);
 	printf("Items in Sums list = %i\n", g_slist_length(Sums));
 	
-	// now iterate over and print list of sums.
+	// now iterate over the Sums list and print block sizes
 	working = Sums;					// GSList *working
 	double complex current_total = CMPLX(0.0,0.0);
-	int blk_size = 0,count = 0;
+	int blk_size;
 	while(working != NULL) {
-		fps_ptr = working->data;	// FourPrimeSum *fsp_ptr
-		if(compare_gprime(&(fps_ptr->total),&current_total) > 0) {
+		fps_ptr = working->data;
+		if(compare_gprime( &(fps_ptr->total), &current_total) != 0) { // new total
+			// Mark block start
+			blk_start = working;
+			// update current total
 			current_total = fps_ptr->total;
-			printf("(%d) =====================\n", blk_size);
-			blk_size = 0;
-		}
-		++blk_size;
-		printf("%d: ",count); ++count;
-		printf("(%.1f + %.1f) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
-		printf("(%.1f + %.1f) + ", creal(fps_ptr->p0), cimag(fps_ptr->p0));
-		printf("(%.1f + %.1f) + ", creal(fps_ptr->p1), cimag(fps_ptr->p1));
-		printf("(%.1f + %.1f) + ", creal(fps_ptr->p2), cimag(fps_ptr->p2));
-		printf("(%.1f + %.1f)\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
-		working = g_slist_next(working);
-	}
-		
-
+			blk_size = 1;
+			// goto next entry in Sums list
+			working = g_slist_next(working);
+			while(working != NULL) {
+				fps_ptr = working->data;
+				if(compare_gprime( &(fps_ptr->total), &current_total) == 0) {
+					++blk_size;
+					working = g_slist_next(working);
+				} 
+				else break;
+			} // while...
+			if(blk_size >=6) {
+				// working points to (possible) next entry in Sums
+				// blk_start points to head of block
+				printf("Block size: %d\n",blk_size);
+				// scan and print the block of sums
+				while(blk_start != working) {
+					fps_ptr = blk_start->data;
+					printf("(%.1f + %.1f) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
+					printf("(%.1f + %.1f) + ", creal(fps_ptr->p0), cimag(fps_ptr->p0));
+					printf("(%.1f + %.1f) + ", creal(fps_ptr->p1), cimag(fps_ptr->p1));
+					printf("(%.1f + %.1f) + ", creal(fps_ptr->p2), cimag(fps_ptr->p2));
+					printf("(%.1f + %.1f)\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
+					blk_start = g_slist_next(blk_start);
+				} // while blk_start
+			} // if blk_size
+		} // if new total
+	} // while not NULL
+			
 	// =====Cleanup Code=====
 	// Free the list of gprimes
 	g_slist_free_full(head,free);	
