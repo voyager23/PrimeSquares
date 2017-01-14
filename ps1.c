@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 	// now iterate over the Sums list and print block sizes
 	working = Sums;					// GSList *working
 	double complex current_total = CMPLX(0.0,0.0);
-	int blk_size;
+	int blk_size,max_blk_size = 6;
 	while(working != NULL) {
 		fps_ptr = working->data;
 		if(compare_gprime( &(fps_ptr->total), &current_total) != 0) { // new total
@@ -194,11 +194,15 @@ int main(int argc, char **argv)
 				} 
 				else break;
 			} // while...
-			if(blk_size >=6) {
+			if(blk_size > max_blk_size) {
+				max_blk_size = blk_size;
 				// working points to (possible) next entry in Sums
 				// blk_start points to head of block
 				printf("Block size: %d\n",blk_size);
 				// scan and print the block of sums
+				
+				// Note: at this point (GSList *blk_start) is known and (int blk_size) is known
+				
 				while(blk_start != working) {
 					fps_ptr = blk_start->data;
 					printf("(%.1f + %.1fi) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
@@ -211,6 +215,8 @@ int main(int argc, char **argv)
 			} // if blk_size
 		} // if new total
 	} // while not NULL
+	
+	printf("Max Block Size = %d\n", max_blk_size);
 			
 	// =====Cleanup Code=====
 	// Free the list of gprimes
