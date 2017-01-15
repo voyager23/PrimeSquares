@@ -41,6 +41,7 @@
 	#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))
 	#define prt_gprime(a) printf("(%.1f,%.1f)", creal(a), cimag(a))
 	
+	
 #endif
 
 
