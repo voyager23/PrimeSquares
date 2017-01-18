@@ -36,11 +36,22 @@
 		complex double total;
 		complex double p0,p1,p2,p3;
 	} FourPrimeSum;
-
+	
+	typedef struct pd {
+		int count;	// pairs found
+		int idxa, idxb;	// indexes of -last- pair found
+		gprime value;	// -last- value found
+	} PairData;
+	
+	// function declarations
+	int count_pairs(gprime *p, gprime*q);
+	gint compare_gprime(gconstpointer a, gconstpointer b);
+	void prt_working_cfg(gprime *cfg, int rows);
+	int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb);
+	
 	// Convenience Macros
 	#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))
-	#define prt_gprime(a) printf("(%.1f,%.1f)", creal(a), cimag(a))
-	
+	#define prt_gprime(a) printf("(%0.01f,%0.01fi)", creal(a), cimag(a))
 	
 #endif
 
