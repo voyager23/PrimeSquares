@@ -35,7 +35,10 @@
 		{2,3,0,1},{2,3,1,0},{3,0,1,2},{3,0,2,1},
 		{3,1,0,2},{3,1,2,0},{3,2,0,1},{3,2,1,0}
 	};
-	
+
+#if(1)
+
+
 	gprime equalsums[][4] = // Sum = (7.0, 29.0)
 	{ 
 		{CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0)},
@@ -57,11 +60,36 @@
 		{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(4.0,9.0)}
 	};
 
+#else
 
-			
+	gprime equalsums[][4] =
+	{ // equalsums (8 + 26i)
+		{CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0)},
+		{CMPLX(1.0,6.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0),CMPLX(3.0,8.0)},
+		{CMPLX(1.0,6.0),CMPLX(2.0,3.0),CMPLX(2.0,7.0),CMPLX(3.0,10.0)},
+		{CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(4.0,5.0)},
+		{CMPLX(1.0,4.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0),CMPLX(3.0,10.0)},
+		{CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(4.0,5.0)},
+		{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,7.0),CMPLX(4.0,5.0)},
+		{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(4.0,9.0)},
+		{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(2.0,7.0),CMPLX(4.0,9.0)},
+		{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(2.0,5.0),CMPLX(4.0,11.0)},
+		{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(5.0,6.0)},
+		{CMPLX(1.0,2.0),CMPLX(2.0,3.0),CMPLX(2.0,13.0),CMPLX(3.0,8.0)},
+		{CMPLX(1.0,2.0),CMPLX(1.0,14.0),CMPLX(2.0,5.0),CMPLX(4.0,5.0)},
+		{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(4.0,9.0)},
+		{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(4.0,11.0)},
+		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(3.0,8.0),CMPLX(3.0,10.0)},
+		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(2.0,13.0),CMPLX(4.0,5.0)},
+		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(2.0,7.0),CMPLX(4.0,11.0)},
+		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(5.0,8.0)},
+		{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(5.0,6.0)}
+	};
 
+#endif
 
 // -----Main-----
+
 int main(int argc, char **argv)
 {
 	// declare indexes for selecting rows
@@ -73,7 +101,6 @@ int main(int argc, char **argv)
 	
 	// Determine the number of rows in the equalsums matrix
 	const int nRows = sizeof(equalsums)/sizeof(gprime)/4;	
-	printf("nRows: %d\n",nRows);
 	
 	// select 4 rows from equal sums
 	candidates = 0;
@@ -113,7 +140,9 @@ int main(int argc, char **argv)
 			} // for c...
 		} // for b ...
 	} // for a ...
-	printf("Number of candidates: %d\n",candidates); 
+	printf("nRows: %d\n",nRows);
+	printf("Number of candidates: %d\n",candidates);
+
 	return 0;
 }
 
