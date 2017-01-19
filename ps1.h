@@ -33,12 +33,13 @@
 	typedef double complex gprime;
 
 	typedef struct fps {
-		complex double total;
-		complex double p0,p1,p2,p3;
+		gprime total;
+		gprime p0,p1,p2,p3;
 	} FourPrimeSum;
 	
 	typedef struct pd {
 		int count;	// pairs found
+		int rowa,rowb;	// row numbers (0-3)
 		int idxa, idxb;	// indexes of -last- pair found
 		gprime value;	// -last- value found
 	} PairData;
@@ -48,6 +49,8 @@
 	gint compare_gprime(gconstpointer a, gconstpointer b);
 	void prt_working_cfg(gprime *cfg, int rows);
 	int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb);
+	int transpose_wcfg(gprime *wcfg, PairData *pdat, int row_a_dest, int row_b_dest);
+
 	
 	// Convenience Macros
 	#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))

@@ -65,6 +65,8 @@ int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb)
 	gprime *b = working_cfg + (rowb * 4);
 	// initialise the data area
 	pd->count = 0;
+	pd->rowa = rowa;
+	pd->rowb = rowb;
 	pd->idxa = -1;
 	pd->idxb = -1;
 	pd->value = CMPLX(0.0,0.0);	
@@ -95,5 +97,45 @@ void prt_working_cfg(gprime *cfg, int rows) {
 		}
 		printf("\n");
 	}
+}
+
+int transpose_wcfg(gprime *wcfg, PairData *pdat, int idx_a_dest, int idx_b_dest)
+{
+	int a_src  = (pdat->rowa*4) + (pdat->idxa);
+	int a_dest = (pdat->rowa*4) + idx_a_dest;
+	int b_src  = (pdat->rowb*4) + (pdat->idxb);
+	int b_dest = (pdat->rowb*4) + idx_b_dest;
+	
+	gprime a = *(wcfg + a_src);
+	gprime b = *(wcfg + b_src);
+	// Sanity check for PairData
+	if (a != b) {
+		printf("\nUnequal pair value found.\n");
+		return(1);
+	}
+	if (idx_a_dest == idx_b_dest) return(2);
+	if ((wcfg == NULL)||(pdat == NULL)) return(3);
+	
+	// Note - if src and dest offsets are equal then value is already in place!
+	
+	// transpose row a
+	if(a_src != a_dest) {
+		// mov src to temp - already done! - gprime a has value
+		// mov dest to src
+		*(wcfg + a_src) = *(wcfg + a_dest);	
+		// mov temp to dest
+		*(wcfg + a_dest) = a;
+	}
+	
+	// transpose row b
+	if(b_src != b_dest) {
+		// mov src to temp - already done! - gprime b has value
+		// mov dest to src
+		*(wcfg + b_src) = *(wcfg + b_dest);	
+		// mov temp to dest
+		*(wcfg + b_dest) = b;
+	}
+		
+	return(0);
 }
 

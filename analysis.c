@@ -97,7 +97,9 @@ int main(int argc, char **argv)
 	// declare a matrix for the working config
 	gprime working_cfg[4][4];
 	// declare pair data blocks
-	PairData pdr0r1,pdr2r0,pdr2r1,pdr3r0,pdr3r1,pdr3r2;
+	PairData pdr0r1,pdr0r2,pdr1r2,pdr0r3,pdr1r3,pdr2r3;
+	// declare return value
+	int rv;
 	
 	// Determine the number of rows in the equalsums matrix
 	const int nRows = sizeof(equalsums)/sizeof(gprime)/4;	
@@ -114,35 +116,55 @@ int main(int argc, char **argv)
 			}
 			// count pairs in row0 and row1
 			if(count_pairs_V2(&pdr0r1, (gprime*)working_cfg, 0, 1) != 1) continue;
+			
+			// do pdr0r1 here
+			
 			// Add another row to the working config
 			for(c = 0; c < nRows; ++c) {
 				// load the third row
 				for(int x = 0; x < 4; ++x)
 					working_cfg[2][x] = equalsums[c][x];
 				// test for validity
-				if(count_pairs_V2(&pdr2r0, (gprime*)working_cfg, 2, 0) != 0) continue;
-				if(count_pairs_V2(&pdr2r1, (gprime*)working_cfg, 2, 1) != 1) continue;
+				if(count_pairs_V2(&pdr0r2, (gprime*)working_cfg, 0, 2) != 0) continue;
+				if(count_pairs_V2(&pdr1r2, (gprime*)working_cfg, 1, 2) != 1) continue;
+				
+				// do pdr1r2 here
+				
 				// Add final row
 				for(d = 0; d < nRows; ++d) {
 					// load the fourth row
 					for(int x = 0; x < 4; ++x)
 						working_cfg[3][x] = equalsums[d][x];
 					// test for validity
-					if(count_pairs_V2(&pdr3r0, (gprime*)working_cfg, 3, 0) != 1) continue;
-					if(count_pairs_V2(&pdr3r1, (gprime*)working_cfg, 3, 1) != 0) continue;
-					if(count_pairs_V2(&pdr3r2, (gprime*)working_cfg, 3, 2) != 1) continue;
+					if(count_pairs_V2(&pdr0r3, (gprime*)working_cfg, 0, 3) != 1) continue;
+					if(count_pairs_V2(&pdr1r3, (gprime*)working_cfg, 1, 3) != 0) continue;
+					if(count_pairs_V2(&pdr2r3, (gprime*)working_cfg, 2, 3) != 1) continue;
 					// if we get here then the working config may be a tocta candidate
+					
+					// do pdr2r3 here
+					
+					// do pdr0r3 here
+					
 					printf("-----Candidate-----\n");
 					prt_working_cfg((gprime*)working_cfg,4);
+					rv  = transpose_wcfg((gprime*)&working_cfg, &pdr0r1, 1, 0);
+					rv += transpose_wcfg((gprime*)&working_cfg, &pdr1r2, 1, 0);
+					rv += transpose_wcfg((gprime*)&working_cfg, &pdr2r3, 1, 0);
+					rv += transpose_wcfg((gprime*)&working_cfg, &pdr0r3, 0, 1);
+					printf("\nTranspose returned %d\n",rv);
+					printf("-----Transposed-----\n");
+					prt_working_cfg((gprime*)working_cfg,4);
+						
+
 					printf("\n");
 					++candidates;
 				} // for d...
 			} // for c...
 		} // for b ...
 	} // for a ...
-	printf("nRows: %d\n",nRows);
-	printf("Number of candidates: %d\n",candidates);
-
+	
+	printf("Number of candidates found: %d  ",candidates);
+	printf("Rows scanned: %d\n",nRows);
 	return 0;
 }
 
