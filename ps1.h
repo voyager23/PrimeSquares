@@ -32,7 +32,7 @@
 
 	typedef double complex gprime;
 	
-	typedef gprime Matrix[4][4];
+	// typedef gprime Matrix[4][4];
 
 	typedef struct fps {
 		gprime total;

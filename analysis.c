@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 						working_cfg[3][x] = equalsums[d][x];
 					// test for validity
 					pdrarb = (PairDataV3*)malloc(sizeof(PairDataV3));
-					if(count_pairs_V3(pdrarb, (gprime*)working_cfg, 1, 3) != 0) {
+					if(count_pairs_V3(pdrarb , (gprime*)working_cfg, 1, 3) != 0) {
 						free(pdrarb);
 						continue;
 					}
@@ -175,14 +175,18 @@ int main(int argc, char **argv)
 						PairsV3 = g_slist_append(PairsV3, pdrarb);
 					}
 					// if we get here then the working config may be a tocta candidate
-					
-					
 					printf("-----Candidate-----\n");
 					prt_working_cfg((gprime*)working_cfg,4);
-						
-
 					printf("\n");
 					++candidates;
+					
+					// allocate a transpose matrix
+					// from working_cfg, PairsV3 list and transpose matrix
+					// 		copy pairs to transpose and set sources to zero
+					//		copy remaining row values
+					// permute col2/col3 values and look for column sums == target 
+					
+					
 				} // for d...
 			} // for c...
 		} // for b ...
