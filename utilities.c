@@ -45,18 +45,20 @@ gint compare_gprime(gconstpointer a, gconstpointer b)
 	return 0;
 }
 
-int count_pairs(gprime *p, gprime*q) 
-{
-	// Assumes rows of 4 values
-	int a,b,pair_count;
-	pair_count = 0;
-	for(a = 0; a < 4; ++a) {
-		for(b = 0; b < 4; ++b) {
-			if(compare_gprime((p+a),(q+b)) == 0) pair_count += 1;
+#if(0)
+	int count_pairs(gprime *p, gprime*q) 
+	{
+		// Assumes rows of 4 values
+		int a,b,pair_count;
+		pair_count = 0;
+		for(a = 0; a < 4; ++a) {
+			for(b = 0; b < 4; ++b) {
+				if(compare_gprime((p+a),(q+b)) == 0) pair_count += 1;
+			}
 		}
+		return pair_count;
 	}
-	return pair_count;
-}
+
 
 int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb)
 {
@@ -83,7 +85,36 @@ int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb)
 	}
 	return(pd->count);
 }
-	
+#endif
+
+int count_pairs_V3(PairDataV3 *pd3, gprime *working_cfg, int rowa, int rowb)
+{
+	// setup pointers to row start
+	gprime *a = working_cfg + (rowa * 4);
+	gprime *b = working_cfg + (rowb * 4);
+	// initialise the data area
+	pd3->count = 0;
+	pd3->matchA = NULL;
+	pd3->matchB = NULL;
+	pd3->value = CMPLX(0.0,0.0);
+	for(int cola = 0; cola < 4; ++cola) {
+		for(int colb = 0; colb < 4; ++colb) {
+			if(compare_gprime((a + cola),(b + colb)) == 0) {
+				++pd3->count;
+				pd3->matchA = a + cola;
+				pd3->matchB = b + colb;
+				pd3->value = *(pd3->matchA);
+			}
+			if(pd3->count > 1) {
+				pd3->matchA = NULL;
+				pd3->matchB = NULL;
+				pd3->value = CMPLX(0.0,0.0);
+				return(pd3->count);
+			}
+		} // for colb...
+	} // for cola...
+	return(pd3->count);
+}
 
 void prt_working_cfg(gprime *cfg, int rows) {
 	if((rows<1)||(rows>4)) {

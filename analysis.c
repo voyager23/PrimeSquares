@@ -95,9 +95,16 @@ int main(int argc, char **argv)
 	// declare indexes for selecting rows
 	int a,b,c,d,candidates;
 	// declare a matrix for the working config
+	
 	gprime working_cfg[4][4];
+	
 	// declare pair data blocks
-	PairData pdr0r1,pdr0r2,pdr1r2,pdr0r3,pdr1r3,pdr2r3;
+	// PairData pdr0r1,pdr0r2,pdr1r2,pdr0r3,pdr1r3,pdr2r3;
+	
+	// List of PairDataV3 structures
+	GSList *PairsV3 = NULL;
+	PairDataV3 *pdrarb = NULL;
+	
 	// declare return value
 	int rv;
 	
@@ -114,10 +121,15 @@ int main(int argc, char **argv)
 				working_cfg[0][x] = equalsums[a][x];
 				working_cfg[1][x] = equalsums[b][x];
 			}
-			// count pairs in row0 and row1
-			if(count_pairs_V2(&pdr0r1, (gprime*)working_cfg, 0, 1) != 1) continue;
 			
-			// do pdr0r1 here
+			// count pairs in row0 and row1
+			pdrarb = (PairDataV3*)malloc(sizeof(PairDataV3));
+			if(count_pairs_V3(pdrarb, (gprime*)working_cfg, 0, 1) != 1) {
+				free(pdrarb);
+				continue;
+			} else {
+				PairsV3 = g_slist_append(PairsV3, pdrarb);
+			}
 			
 			// Add another row to the working config
 			for(c = 0; c < nRows; ++c) {
@@ -125,34 +137,47 @@ int main(int argc, char **argv)
 				for(int x = 0; x < 4; ++x)
 					working_cfg[2][x] = equalsums[c][x];
 				// test for validity
-				if(count_pairs_V2(&pdr0r2, (gprime*)working_cfg, 0, 2) != 0) continue;
-				if(count_pairs_V2(&pdr1r2, (gprime*)working_cfg, 1, 2) != 1) continue;
-				
-				// do pdr1r2 here
-				
+				pdrarb = (PairDataV3*)malloc(sizeof(PairDataV3));
+				if(count_pairs_V3(pdrarb, (gprime*)working_cfg, 0, 2) != 0) {
+					free(pdrarb);
+					continue;
+				}
+				// Here the PairDataV3 structure remains valid
+				if(count_pairs_V3(pdrarb, (gprime*)working_cfg, 1, 2) != 1) {
+					free(pdrarb);
+					continue;
+				}
+				PairsV3 = g_slist_append(PairsV3, pdrarb);
+
 				// Add final row
 				for(d = 0; d < nRows; ++d) {
 					// load the fourth row
 					for(int x = 0; x < 4; ++x)
 						working_cfg[3][x] = equalsums[d][x];
 					// test for validity
-					if(count_pairs_V2(&pdr0r3, (gprime*)working_cfg, 0, 3) != 1) continue;
-					if(count_pairs_V2(&pdr1r3, (gprime*)working_cfg, 1, 3) != 0) continue;
-					if(count_pairs_V2(&pdr2r3, (gprime*)working_cfg, 2, 3) != 1) continue;
+					pdrarb = (PairDataV3*)malloc(sizeof(PairDataV3));
+					if(count_pairs_V3(pdrarb, (gprime*)working_cfg, 1, 3) != 0) {
+						free(pdrarb);
+						continue;
+					}
+					// Here the PairDataV3 structure remains valid
+					if(count_pairs_V3(pdrarb, (gprime*)working_cfg, 0, 3) != 1) {
+						free(pdrarb);
+						continue;
+					} else {
+						PairsV3 = g_slist_append(PairsV3, pdrarb);
+					}
+					pdrarb = (PairDataV3*)malloc(sizeof(PairDataV3));
+					if(count_pairs_V3(pdrarb, (gprime*)working_cfg, 2, 3) != 1) {
+						free(pdrarb);
+						continue;
+					} else {
+						PairsV3 = g_slist_append(PairsV3, pdrarb);
+					}
 					// if we get here then the working config may be a tocta candidate
 					
-					// do pdr2r3 here
-					
-					// do pdr0r3 here
 					
 					printf("-----Candidate-----\n");
-					prt_working_cfg((gprime*)working_cfg,4);
-					rv  = transpose_wcfg((gprime*)&working_cfg, &pdr0r1, 1, 0);
-					rv += transpose_wcfg((gprime*)&working_cfg, &pdr1r2, 1, 0);
-					rv += transpose_wcfg((gprime*)&working_cfg, &pdr2r3, 1, 0);
-					rv += transpose_wcfg((gprime*)&working_cfg, &pdr0r3, 0, 1);
-					printf("\nTranspose returned %d\n",rv);
-					printf("-----Transposed-----\n");
 					prt_working_cfg((gprime*)working_cfg,4);
 						
 

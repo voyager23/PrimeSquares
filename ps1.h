@@ -31,6 +31,8 @@
 	#include <glib.h>
 
 	typedef double complex gprime;
+	
+	typedef gprime Matrix[4][4];
 
 	typedef struct fps {
 		gprime total;
@@ -38,17 +40,24 @@
 	} FourPrimeSum;
 	
 	typedef struct pd {
-		int count;	// pairs found
+		int count;		// pairs found
 		int rowa,rowb;	// row numbers (0-3)
 		int idxa, idxb;	// indexes of -last- pair found
 		gprime value;	// -last- value found
 	} PairData;
+	
+	typedef struct pd3 {
+		int count;		// 0 <= pairs found <= 1 
+		gprime *matchA, *matchB;	// unique row pair in working_cfg
+		gprime value;	// last value found
+	}PairDataV3;
 	
 	// function declarations
 	int count_pairs(gprime *p, gprime*q);
 	gint compare_gprime(gconstpointer a, gconstpointer b);
 	void prt_working_cfg(gprime *cfg, int rows);
 	int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb);
+	int count_pairs_V3(PairDataV3 *pd3, gprime *working_cfg, int rowa, int rowb);
 	int transpose_wcfg(gprime *wcfg, PairData *pdat, int row_a_dest, int row_b_dest);
 
 	
