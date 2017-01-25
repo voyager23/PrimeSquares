@@ -45,7 +45,7 @@ gint compare_gprime(gconstpointer a, gconstpointer b)
 	return 0;
 }
 
-#if(0)
+
 	int count_pairs(gprime *p, gprime*q) 
 	{
 		// Assumes rows of 4 values
@@ -67,10 +67,21 @@ int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb)
 	gprime *b = working_cfg + (rowb * 4);
 	// initialise the data area
 	pd->count = 0;
+	// These are the source co-ords
 	pd->rowa = rowa;
 	pd->rowb = rowb;
 	pd->idxa = -1;
 	pd->idxb = -1;
+	// These are the target co-ords
+	if((rowb - rowa) == 1) {
+		pd->tara = 1;
+		pd->tarb = 0;
+	} else {
+	// adjust for final pair
+		pd->tara = 0;
+		pd->tarb = 1;
+	}	
+	// scan for pairs
 	pd->value = CMPLX(0.0,0.0);	
 	for(int cola = 0; cola < 4; ++cola) {
 		for(int colb = 0; colb < 4; ++colb) {
@@ -85,7 +96,6 @@ int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb)
 	}
 	return(pd->count);
 }
-#endif
 
 int count_pairs_V3(PairDataV3 *pd3, gprime *working_cfg, int rowa, int rowb)
 {

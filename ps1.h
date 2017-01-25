@@ -32,7 +32,7 @@
 
 	typedef double complex gprime;
 	
-	// typedef gprime Matrix[4][4];
+	typedef gprime Matrix[4][4];
 
 	typedef struct fps {
 		gprime total;
@@ -43,6 +43,7 @@
 		int count;		// pairs found
 		int rowa,rowb;	// row numbers (0-3)
 		int idxa, idxb;	// indexes of -last- pair found
+		int tara, tarb;	// target colums for this pair
 		gprime value;	// -last- value found
 	} PairData;
 	
@@ -63,7 +64,7 @@
 	
 	// Convenience Macros
 	#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))
-	#define prt_gprime(a) printf("(%d,%di)\t", (int)creal(a), (int)cimag(a))
+	#define prt_gprime(a) printf("(%d,%di)  ", (int)creal(a), (int)cimag(a))
 	
 #endif
 
