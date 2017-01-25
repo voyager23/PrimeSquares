@@ -36,7 +36,7 @@
 		{3,1,0,2},{3,1,2,0},{3,2,0,1},{3,2,1,0}
 	};
 
-#if(1)
+#if(0)
 
 
 	gprime equalsums[][4] = // Sum = (7.0, 29.0)
@@ -97,17 +97,13 @@ int main(int argc, char **argv)
 	int a,b,c,d,candidates;
 	// declare a matrix for the working config
 	
-	// typedef gprime Matrix[4][4];
+	// from typedef gprime Matrix[4][4];
 	Matrix working_cfg;
 	Matrix transpose;
 	
-	// declare pair data blocks
-	// PairData pdr0r1,pdr0r2,pdr1r2,pdr0r3,pdr1r3,pdr2r3;
-	
 	PairData pdarray[4];	// use an array of PairData
 	
-	// declare return value
-	int rv;
+	gprime Target = equalsums[0][0] + equalsums[0][1] + equalsums[0][2] + equalsums[0][3];
 	
 	// Determine the number of rows in the equalsums matrix
 	const int nRows = sizeof(equalsums)/sizeof(gprime)/4;	
@@ -153,7 +149,7 @@ int main(int argc, char **argv)
 					prt_working_cfg((gprime*)working_cfg,4);
 					printf("\n");
 					++candidates;
-					
+										
 					// using transpose matrix, PairData array and working_cfg ...
 					for(int x = 0; x < 4; ++x) {
 						// set the value in the transpose matrix
@@ -198,7 +194,40 @@ int main(int argc, char **argv)
 
 					// permute col2/col3 values and look for column sums == target
 					// if solution found add transpose to GSList Toctas else free transpose matrix
+					
+					gprime swap;
+					for(int row0 = 0; row0 < 2; ++row0) {
+						for(int row1 = 0; row1 < 2; ++row1) {
+							for(int row2 = 0; row2 < 2; ++row2) {
+								for(int row3 = 0; row3 < 2; ++row3) {
+									// test config
+									printf("-----Swap Transpose-----\n");
+									prt_working_cfg((gprime*)transpose,4);
+									printf("Target: ");
+									prt_gprime(Target);
+									printf("\n");
+									// record any success
+									gprime colsum2 = transpose[0][2] + transpose[1][2] + transpose[2][2] + transpose[3][2]; 
+									gprime colsum3 = transpose[0][3] + transpose[1][3] + transpose[2][3] + transpose[3][3];
+									// printf("Colsum2 = "); prt_gprime(colsum2); printf("\n"); 
+									// printf("Colsum3 = "); prt_gprime(colsum3); printf("\n");
+									if((Target == colsum2)&&(Target == colsum3)) { 
+										printf("TOCTA!\n");
+										exit(0);
+									}
+									// swap values in row 3 cols 2 & 3
+									swap = transpose[3][2]; transpose[3][2] = transpose[3][3]; transpose[3][3] = swap;
+								}
+								// swap values in row 2 cols 2 & 3
+								swap = transpose[2][2]; transpose[2][2] = transpose[2][3]; transpose[2][3] = swap;
+							}
+							// swap values in row 1 cols 2 & 3
+							swap = transpose[1][2]; transpose[1][2] = transpose[1][3]; transpose[1][3] = swap;
 
+						}
+						// swap values in row 0 cols 2 & 3
+						swap = transpose[0][2]; transpose[0][2] = transpose[0][3]; transpose[0][3] = swap;
+					}
 				} // for d...
 			} // for c...
 		} // for b ...
