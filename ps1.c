@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 	int found = 0;
 	
 	GSList *head = NULL;
-	GSList *working, *blk_start;
+	GSList *blk_start, *working, *write_ptr;
 	gprime *gprime_ptr;
 	
 	setlocale(LC_ALL,"");
@@ -193,8 +193,16 @@ int main(int argc, char **argv)
 	Sums = g_slist_sort(Sums,compare_fps);
 	printf("Items in Sums list = %i\n", g_slist_length(Sums));
 	
+	// Open disk file here
+	FILE *fout = fopen("equalsums.dat","wb");
+	if(fout == NULL) 
+	{
+		printf("Error: No file opened.\n");
+		exit(1);
+	}
+	
 	// now iterate over the Sums list and print block sizes
-	working = Sums;					// GSList *working
+	working = Sums;	// GSList *working
 	double complex current_total = CMPLX(0.0,0.0);
 	int blk_size,max_blk_size = 6;
 	while(working != NULL) {
@@ -217,19 +225,34 @@ int main(int argc, char **argv)
 			} // while...
 			if(blk_size > max_blk_size) {
 				max_blk_size = blk_size;
-				// working points to (possible) next entry in Sums
+				// working points to end-of-block + 1
 				// blk_start points to head of block
+				write_ptr = blk_start;
 				printf("Block size: %d\n{\n",blk_size);
-				while(blk_start != working) {
-					fps_ptr = blk_start->data;
-					//printf("(%.1f + %.1fi) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
+				while(write_ptr != working) {
+					fps_ptr = write_ptr->data;
 					printf("{CMPLX(%.1f,%.1f),", creal(fps_ptr->p0), cimag(fps_ptr->p0));
 					printf("CMPLX(%.1f,%.1f),", creal(fps_ptr->p1), cimag(fps_ptr->p1));
 					printf("CMPLX(%.1f,%.1f),", creal(fps_ptr->p2), cimag(fps_ptr->p2));
 					printf("CMPLX(%.1f,%.1f)},\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
-					blk_start = g_slist_next(blk_start);
-				} // while blk_start
+					write_ptr = g_slist_next(write_ptr);					
+				} // while write_ptr
 				printf("}\n");
+				
+				// ----------Code to write block to disk file here----------
+				// For each block:
+				//		write number of rows of 4 gprimes as integer;
+				fwrite((const void*)&blk_size, sizeof(int), 1, fout);
+				// set write_ptr to blk_start
+				write_ptr = blk_start;
+				while(write_ptr != working) {
+					fps_ptr = write_ptr->data;
+					const void *p0 = &(fps_ptr->p0);
+					fwrite(p0, sizeof(gprime), 4, fout);
+					write_ptr = g_slist_next(write_ptr);
+				}
+				// ----------End block write----------
+				
 			} // if blk_size
 		} // if new total
 	} // while not NULL
@@ -237,10 +260,13 @@ int main(int argc, char **argv)
 	printf("Max Block Size = %d\n", max_blk_size);
 			
 	// =====Cleanup Code=====
+	
+	// Close Disk File here
+	fclose(fout);
+	printf("equalsums.dat closed.\n");
 	// Free the list of gprimes
 	g_slist_free_full(head,free);	
 	printf("Gprimes list cleared.\n");
-	
 	g_slist_free_full(Sums,free);
 	printf("Sums list cleared.\n");
 	

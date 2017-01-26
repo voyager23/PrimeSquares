@@ -30,7 +30,7 @@
 	#include <locale.h>
 	#include <glib.h>
 
-	typedef double complex gprime;
+	typedef double complex gprime;	// gprime is 16 bytes
 	
 	typedef gprime Matrix[4][4];
 
