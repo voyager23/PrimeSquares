@@ -57,34 +57,52 @@
 		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(2.0,13.0),CMPLX(3.0,8.0)},
 		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(4.0,11.0)},
 		{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(2.0,13.0),CMPLX(3.0,10.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(4.0,9.0)}
+		{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(4.0,9.0)},		// add comma
 	};
 
 #else
 
 	gprime equalsums[][4] =
-	{ // equalsums (8 + 26i)
-		{CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0)},
-		{CMPLX(1.0,6.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0),CMPLX(3.0,8.0)},
-		{CMPLX(1.0,6.0),CMPLX(2.0,3.0),CMPLX(2.0,7.0),CMPLX(3.0,10.0)},
-		{CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(4.0,5.0)},
-		{CMPLX(1.0,4.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0),CMPLX(3.0,10.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(4.0,5.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,7.0),CMPLX(4.0,5.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(4.0,9.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(2.0,7.0),CMPLX(4.0,9.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(2.0,5.0),CMPLX(4.0,11.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(5.0,6.0)},
-		{CMPLX(1.0,2.0),CMPLX(2.0,3.0),CMPLX(2.0,13.0),CMPLX(3.0,8.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,14.0),CMPLX(2.0,5.0),CMPLX(4.0,5.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(4.0,9.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(4.0,11.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(3.0,8.0),CMPLX(3.0,10.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(2.0,13.0),CMPLX(4.0,5.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(2.0,7.0),CMPLX(4.0,11.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(5.0,8.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(5.0,6.0)}
-	};
+{
+	{CMPLX(2.0,3.0),CMPLX(2.0,7.0),CMPLX(3.0,8.0),CMPLX(3.0,10.0)},
+	{CMPLX(2.0,3.0),CMPLX(2.0,7.0),CMPLX(2.0,13.0),CMPLX(4.0,5.0)},
+	{CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(2.0,5.0),CMPLX(5.0,6.0)},
+	{CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0),CMPLX(4.0,5.0)},
+	{CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0),CMPLX(5.0,6.0)},
+	{CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(3.0,10.0),CMPLX(4.0,5.0)},
+	{CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(2.0,7.0),CMPLX(5.0,8.0)},
+	{CMPLX(1.0,6.0),CMPLX(2.0,7.0),CMPLX(3.0,10.0),CMPLX(4.0,5.0)},
+	{CMPLX(1.0,6.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0),CMPLX(4.0,9.0)},
+	{CMPLX(1.0,6.0),CMPLX(2.0,3.0),CMPLX(3.0,10.0),CMPLX(4.0,9.0)},
+	{CMPLX(1.0,6.0),CMPLX(2.0,3.0),CMPLX(3.0,8.0),CMPLX(4.0,11.0)},
+	{CMPLX(1.0,6.0),CMPLX(2.0,3.0),CMPLX(2.0,13.0),CMPLX(5.0,6.0)},
+	{CMPLX(1.0,4.0),CMPLX(2.0,7.0),CMPLX(3.0,8.0),CMPLX(4.0,9.0)},
+	{CMPLX(1.0,4.0),CMPLX(2.0,5.0),CMPLX(3.0,10.0),CMPLX(4.0,9.0)},
+	{CMPLX(1.0,4.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0),CMPLX(4.0,11.0)},
+	{CMPLX(1.0,4.0),CMPLX(2.0,5.0),CMPLX(2.0,13.0),CMPLX(5.0,6.0)},
+	{CMPLX(1.0,4.0),CMPLX(2.0,3.0),CMPLX(3.0,10.0),CMPLX(4.0,11.0)},
+	{CMPLX(1.0,4.0),CMPLX(2.0,3.0),CMPLX(2.0,13.0),CMPLX(5.0,8.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(4.0,5.0),CMPLX(4.0,9.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(3.0,8.0),CMPLX(5.0,6.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(6.0,11.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(3.0,10.0),CMPLX(5.0,8.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(2.0,7.0),CMPLX(6.0,11.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(7.0,8.0)},
+	{CMPLX(1.0,2.0),CMPLX(2.0,13.0),CMPLX(3.0,8.0),CMPLX(4.0,5.0)},
+	{CMPLX(1.0,2.0),CMPLX(2.0,7.0),CMPLX(3.0,10.0),CMPLX(4.0,9.0)},
+	{CMPLX(1.0,2.0),CMPLX(2.0,7.0),CMPLX(3.0,8.0),CMPLX(4.0,11.0)},
+	{CMPLX(1.0,2.0),CMPLX(2.0,7.0),CMPLX(2.0,13.0),CMPLX(5.0,6.0)},
+	{CMPLX(1.0,2.0),CMPLX(2.0,5.0),CMPLX(3.0,10.0),CMPLX(4.0,11.0)},
+	{CMPLX(1.0,2.0),CMPLX(2.0,5.0),CMPLX(2.0,13.0),CMPLX(5.0,8.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(4.0,5.0),CMPLX(4.0,11.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(3.0,10.0),CMPLX(5.0,6.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(3.0,8.0),CMPLX(5.0,8.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(6.0,11.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(4.0,9.0),CMPLX(4.0,11.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(7.0,10.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(7.0,8.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(7.0,12.0)}
+};
 
 #endif
 
@@ -212,8 +230,8 @@ int main(int argc, char **argv)
 									// printf("Colsum2 = "); prt_gprime(colsum2); printf("\n"); 
 									// printf("Colsum3 = "); prt_gprime(colsum3); printf("\n");
 									if((Target == colsum2)&&(Target == colsum3)) { 
-										printf("TOCTA!\n");
-										exit(0);
+										printf("==========================TOCTA!=======================================\n");
+										//exit(0);
 									}
 									// swap values in row 3 cols 2 & 3
 									swap = transpose[3][2]; transpose[3][2] = transpose[3][3]; transpose[3][3] = swap;

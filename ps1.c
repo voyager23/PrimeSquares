@@ -219,20 +219,17 @@ int main(int argc, char **argv)
 				max_blk_size = blk_size;
 				// working points to (possible) next entry in Sums
 				// blk_start points to head of block
-				printf("Block size: %d\n",blk_size);
-				// scan and print the block of sums
-				
-				// Note: at this point (GSList *blk_start) is known and (int blk_size) is known
-				
+				printf("Block size: %d\n{\n",blk_size);
 				while(blk_start != working) {
 					fps_ptr = blk_start->data;
-					printf("(%.1f + %.1fi) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
-					printf("(%.1f + %.1fi) + ", creal(fps_ptr->p0), cimag(fps_ptr->p0));
-					printf("(%.1f + %.1fi) + ", creal(fps_ptr->p1), cimag(fps_ptr->p1));
-					printf("(%.1f + %.1fi) + ", creal(fps_ptr->p2), cimag(fps_ptr->p2));
-					printf("(%.1f + %.1fi)\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
+					//printf("(%.1f + %.1fi) = ", creal(fps_ptr->total), cimag(fps_ptr->total));
+					printf("{CMPLX(%.1f,%.1f),", creal(fps_ptr->p0), cimag(fps_ptr->p0));
+					printf("CMPLX(%.1f,%.1f),", creal(fps_ptr->p1), cimag(fps_ptr->p1));
+					printf("CMPLX(%.1f,%.1f),", creal(fps_ptr->p2), cimag(fps_ptr->p2));
+					printf("CMPLX(%.1f,%.1f)},\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
 					blk_start = g_slist_next(blk_start);
 				} // while blk_start
+				printf("}\n");
 			} // if blk_size
 		} // if new total
 	} // while not NULL

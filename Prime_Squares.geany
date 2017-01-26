@@ -27,7 +27,7 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
+current_page=5
 FILE_NAME_0=1268;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fanalysis.c;0;4
 FILE_NAME_1=3352;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Futilities.c;0;4
 FILE_NAME_2=2077;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fps1.h;0;4
