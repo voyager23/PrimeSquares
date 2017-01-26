@@ -245,6 +245,7 @@ int main(int argc, char **argv)
 				fwrite((const void*)&blk_size, sizeof(int), 1, fout);
 				// set write_ptr to blk_start
 				write_ptr = blk_start;
+				// write rows of 4 gprimes to disk
 				while(write_ptr != working) {
 					fps_ptr = write_ptr->data;
 					const void *p0 = &(fps_ptr->p0);
