@@ -28,6 +28,21 @@
 
 // function definitions
 
+int comparedouble (const void * a, const void * b)
+{
+  return ( *(double*)a - *(double*)b );
+}
+
+gint compare_fps(gconstpointer a, gconstpointer b) {
+	FourPrimeSum a_fps, b_fps;
+	a_fps = (*(FourPrimeSum*)a);
+	b_fps = (*(FourPrimeSum*)b);
+	double complex *a_total, *b_total;
+	a_total = &(a_fps.total);
+	b_total = &(b_fps.total);
+	return compare_gprime((gconstpointer)a_total, (gconstpointer)b_total);
+}
+
 gint compare_gprime(gconstpointer a, gconstpointer b)
 {
 	double a_real,b_real,a_imag,b_imag;

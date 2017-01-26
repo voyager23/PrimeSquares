@@ -3,8 +3,8 @@
 
 CFLAGS = -Wall -std=c11 -ggdb -Wno-unused-variable
 
-ps : ps1.o
-	gcc $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o ps1 ps1.o
+ps : ps1.o utilities.o
+	gcc $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o ps1 ps1.o utilities.o
 
 an1 : analysis.o utilities.o
 	gcc $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o an1 analysis.o utilities.o 

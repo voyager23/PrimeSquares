@@ -71,37 +71,7 @@ const double primes[] =
 1847, 1861, 1867, 1871, 1873, 1877, 1879, 1889, 1901, 1907, 1913, 1931, 
 1933, 1949, 1951, 1973, 1979, 1987, 1993, 1997, 1999 };
 
-int comparedouble (const void * a, const void * b)
-{
-  return ( *(double*)a - *(double*)b );
-}
 
-gint compare_gprime(gconstpointer a, gconstpointer b)
-{
-	double a_real,b_real,a_imag,b_imag;
-	
-	a_real = creal(*(double complex*)a);
-	b_real = creal(*(double complex*)b);
-	if(a_real < b_real) return -1;
-	if(a_real > b_real) return +1;
-	// test imag components
-	a_imag = cimag(*(double complex*)a);
-	b_imag = cimag(*(double complex*)b);
-	if(a_imag < b_imag) return -1;
-	if(a_imag > b_imag) return +1;
-	// Equal return 0;
-	return 0;
-}
-
-gint compare_fps(gconstpointer a, gconstpointer b) {
-	FourPrimeSum a_fps, b_fps;
-	a_fps = (*(FourPrimeSum*)a);
-	b_fps = (*(FourPrimeSum*)b);
-	double complex *a_total, *b_total;
-	a_total = &(a_fps.total);
-	b_total = &(b_fps.total);
-	return compare_gprime((gconstpointer)a_total, (gconstpointer)b_total);
-}
 
 //-----Main-----
 int main(int argc, char **argv)
@@ -113,6 +83,7 @@ int main(int argc, char **argv)
 	GSList *head = NULL;
 	GSList *blk_start, *working, *write_ptr;
 	gprime *gprime_ptr;
+	char *outfile = "equalsums.dat";
 	
 	setlocale(LC_ALL,"");
 	
@@ -194,7 +165,7 @@ int main(int argc, char **argv)
 	printf("Items in Sums list = %i\n", g_slist_length(Sums));
 	
 	// Open disk file here
-	FILE *fout = fopen("equalsums.dat","wb");
+	FILE *fout = fopen(outfile,"wb");
 	if(fout == NULL) 
 	{
 		printf("Error: No file opened.\n");
@@ -271,6 +242,8 @@ int main(int argc, char **argv)
 	g_slist_free_full(Sums,free);
 	printf("Sums list cleared.\n");
 	
+	// =====Code to verify disk file=====
+	// =====End Verify=====
 	// =====Done=====
 	return 0;
 }

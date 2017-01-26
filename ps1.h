@@ -54,6 +54,8 @@
 	}PairDataV3;
 	
 	// function declarations
+	int comparedouble (const void * a, const void * b);
+	gint compare_fps(gconstpointer a, gconstpointer b);
 	int count_pairs(gprime *p, gprime*q);
 	gint compare_gprime(gconstpointer a, gconstpointer b);
 	void prt_working_cfg(gprime *cfg, int rows);
