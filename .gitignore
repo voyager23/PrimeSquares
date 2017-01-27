@@ -5,8 +5,9 @@
 *.elf
 
 # Local files
-ps1
-bs1
-an1
+ps
+bs
+an
+dat
 
 
