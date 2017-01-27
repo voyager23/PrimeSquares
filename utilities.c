@@ -24,8 +24,6 @@
 
 #include "ps1.h"
 
-
-
 // function definitions
 
 int comparedouble (const void * a, const void * b)
@@ -61,18 +59,18 @@ gint compare_gprime(gconstpointer a, gconstpointer b)
 }
 
 
-	int count_pairs(gprime *p, gprime*q) 
-	{
-		// Assumes rows of 4 values
-		int a,b,pair_count;
-		pair_count = 0;
-		for(a = 0; a < 4; ++a) {
-			for(b = 0; b < 4; ++b) {
-				if(compare_gprime((p+a),(q+b)) == 0) pair_count += 1;
-			}
+int count_pairs(gprime *p, gprime*q) 
+{
+	// Assumes rows of 4 values
+	int a,b,pair_count;
+	pair_count = 0;
+	for(a = 0; a < 4; ++a) {
+		for(b = 0; b < 4; ++b) {
+			if(compare_gprime((p+a),(q+b)) == 0) pair_count += 1;
 		}
-		return pair_count;
 	}
+	return pair_count;
+}
 
 
 int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb)

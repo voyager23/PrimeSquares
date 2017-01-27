@@ -32,6 +32,8 @@
 
 	typedef double complex gprime;	// gprime is 16 bytes
 	
+	typedef gprime gpRow[4];
+	
 	typedef gprime Matrix[4][4];
 
 	typedef struct fps {
@@ -67,6 +69,8 @@
 	// Convenience Macros
 	#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))
 	#define prt_gprime(a) printf("(%d,%di)  ", (int)creal(a), (int)cimag(a))
+	
+	
 	
 #endif
 

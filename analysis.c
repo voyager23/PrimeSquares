@@ -25,40 +25,40 @@
 
 #include "ps1.h"
 
-	// permutations are for lists (order matters)
-	int perms[][4] =
-	{
-		{0,1,2,3},{0,1,3,2},{0,2,1,3},{0,2,3,1},
-		{0,3,1,2},{0,3,2,1},{1,0,2,3},{1,0,3,2},
-		{1,2,0,3},{1,2,3,0},{1,3,0,2},{1,3,2,0},
-		{2,0,1,3},{2,0,3,1},{2,1,0,3},{2,1,3,0},
-		{2,3,0,1},{2,3,1,0},{3,0,1,2},{3,0,2,1},
-		{3,1,0,2},{3,1,2,0},{3,2,0,1},{3,2,1,0}
-	};
+// permutations are for lists (order matters)
+int perms[][4] =
+{
+	{0,1,2,3},{0,1,3,2},{0,2,1,3},{0,2,3,1},
+	{0,3,1,2},{0,3,2,1},{1,0,2,3},{1,0,3,2},
+	{1,2,0,3},{1,2,3,0},{1,3,0,2},{1,3,2,0},
+	{2,0,1,3},{2,0,3,1},{2,1,0,3},{2,1,3,0},
+	{2,3,0,1},{2,3,1,0},{3,0,1,2},{3,0,2,1},
+	{3,1,0,2},{3,1,2,0},{3,2,0,1},{3,2,1,0}
+};
 
 #if(0)
 
 
-	gprime equalsums[][4] = // Sum = (7.0, 29.0)
-	{ 
-		{CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0)},
-		{CMPLX(1.0,6.0),CMPLX(2.0,3.0),CMPLX(2.0,7.0),CMPLX(2.0,13.0)},
-		{CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0)},
-		{CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(3.0,10.0)},
-		{CMPLX(1.0,4.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0),CMPLX(2.0,13.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(3.0,8.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,7.0),CMPLX(3.0,8.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(3.0,10.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(1.0,14.0),CMPLX(4.0,5.0)},
-		{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(4.0,9.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,14.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(3.0,10.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(2.0,7.0),CMPLX(3.0,10.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(2.0,13.0),CMPLX(3.0,8.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(4.0,11.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(2.0,13.0),CMPLX(3.0,10.0)},
-		{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(4.0,9.0)},		// add comma
-	};
+gprime equalsums[][4] = // Sum = (7.0, 29.0)
+{ 
+	{CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0)},
+	{CMPLX(1.0,6.0),CMPLX(2.0,3.0),CMPLX(2.0,7.0),CMPLX(2.0,13.0)},
+	{CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0)},
+	{CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(3.0,10.0)},
+	{CMPLX(1.0,4.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0),CMPLX(2.0,13.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(3.0,8.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,7.0),CMPLX(3.0,8.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(3.0,10.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(1.0,14.0),CMPLX(4.0,5.0)},
+	{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(4.0,9.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,14.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(3.0,10.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(2.0,7.0),CMPLX(3.0,10.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(2.0,13.0),CMPLX(3.0,8.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(4.0,11.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(2.0,13.0),CMPLX(3.0,10.0)},
+	{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(4.0,9.0)},		// extra comma ignored
+};
 
 #else
 
@@ -110,15 +110,16 @@
 
 int main(int argc, char **argv)
 {
-
-	// declare indexes for selecting rows
-	int a,b,c,d,candidates;
-	// declare a matrix for the working config
+	
+	// Working file
+	char *outfile="equalsums.dat";
+	
+	// variables
+	int a,b,c,d,candidates,toctas;
 	
 	// from typedef gprime Matrix[4][4];
 	Matrix working_cfg;
-	Matrix transpose;
-	
+	Matrix transpose;	
 	PairData pdarray[4];	// use an array of PairData
 	
 	gprime Target = equalsums[0][0] + equalsums[0][1] + equalsums[0][2] + equalsums[0][3];
@@ -126,8 +127,9 @@ int main(int argc, char **argv)
 	// Determine the number of rows in the equalsums matrix
 	const int nRows = sizeof(equalsums)/sizeof(gprime)/4;	
 	
-	// select 4 rows from equal sums
+	// select 4 rows from equal sums array
 	candidates = 0;
+	toctas = 0;
 	for(a = 0; a < nRows; ++a) {
 		for(b = 0; b < nRows; ++b) {
 			if (a == b) continue;
@@ -163,9 +165,9 @@ int main(int argc, char **argv)
 					if(count_pairs_V2(pdarray + 3, (gprime*)working_cfg, 2, 3) != 1) continue;
 
 					// if we get here then the working config may be a tocta candidate
-					printf("-----Candidate-----\n");
-					prt_working_cfg((gprime*)working_cfg,4);
-					printf("\n");
+					// printf("-----Candidate-----\n");
+					// prt_working_cfg((gprime*)working_cfg,4);
+					// printf("\n");
 					++candidates;
 										
 					// using transpose matrix, PairData array and working_cfg ...
@@ -178,9 +180,9 @@ int main(int argc, char **argv)
 						working_cfg[ pdarray[x].rowb ][ pdarray[x].idxb ] *= -1;												
 					}
 					
-					printf("-----Candidate post initial transpose\n");
-					prt_working_cfg((gprime*)working_cfg,4);
-					printf("\n");
+					// printf("-----Candidate post initial transpose\n");
+					// prt_working_cfg((gprime*)working_cfg,4);
+					// printf("\n");
 					
 					// now fill in unused values again tagging used values
 					for(int row = 0; row < 4; ++row) {
@@ -200,15 +202,15 @@ int main(int argc, char **argv)
 						for(int col=0;col<4;++col) 
 							working_cfg[row][col] *= -1;
 					
-					printf("-----Final Candidate-----\n");
-					prt_working_cfg((gprime*)working_cfg,4);
-					printf("\n");					
+					// printf("-----Final Candidate-----\n");
+					// prt_working_cfg((gprime*)working_cfg,4);
+					// printf("\n");					
 					
-					printf("-----Final Transpose-----\n");
-					prt_working_cfg((gprime*)transpose,4);
-					printf("\n");
+					// printf("-----Final Transpose-----\n");
+					// prt_working_cfg((gprime*)transpose,4);
+					// printf("\n");
 	
-					printf("======================================\n");
+					// printf("======================================\n");
 
 					// permute col2/col3 values and look for column sums == target
 					// if solution found add transpose to GSList Toctas else free transpose matrix
@@ -219,19 +221,20 @@ int main(int argc, char **argv)
 							for(int row2 = 0; row2 < 2; ++row2) {
 								for(int row3 = 0; row3 < 2; ++row3) {
 									// test config
-									printf("-----Swap Transpose-----\n");
-									prt_working_cfg((gprime*)transpose,4);
-									printf("Target: ");
-									prt_gprime(Target);
-									printf("\n");
+									
+									// printf("-----Swap Transpose-----\n");
+									// prt_working_cfg((gprime*)transpose,4);
+									// printf("Target: ");
+									// prt_gprime(Target);
+									// printf("\n");
 									// record any success
 									gprime colsum2 = transpose[0][2] + transpose[1][2] + transpose[2][2] + transpose[3][2]; 
 									gprime colsum3 = transpose[0][3] + transpose[1][3] + transpose[2][3] + transpose[3][3];
 									// printf("Colsum2 = "); prt_gprime(colsum2); printf("\n"); 
 									// printf("Colsum3 = "); prt_gprime(colsum3); printf("\n");
 									if((Target == colsum2)&&(Target == colsum3)) { 
-										printf("==========================TOCTA!=======================================\n");
-										//exit(0);
+										printf(" TOCTA!\t");
+										++toctas;
 									}
 									// swap values in row 3 cols 2 & 3
 									swap = transpose[3][2]; transpose[3][2] = transpose[3][3]; transpose[3][3] = swap;
@@ -251,8 +254,10 @@ int main(int argc, char **argv)
 		} // for b ...
 	} // for a ...
 	
-	printf("Number of candidates found: %d  ",candidates);
-	printf("Rows scanned: %d\n",nRows);
+	printf("\nEqualSum rows scanned: %d\n", nRows);
+	printf("Number of candidates found: %d\n", candidates);
+	printf("Number of Tocta configurations found: %d\n", toctas);
+	printf("Number of unique Toctas may be %d\n", toctas/48);
 	return 0;
 }
 

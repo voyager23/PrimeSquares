@@ -4,9 +4,10 @@
 *.obj
 *.elf
 
-# Local files
+# Local binary files
 ps1
 bs1
 an1
+dat
 
 

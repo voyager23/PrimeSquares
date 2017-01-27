@@ -83,7 +83,9 @@ int main(int argc, char **argv)
 	GSList *head = NULL;
 	GSList *blk_start, *working, *write_ptr;
 	gprime *gprime_ptr;
-	char *outfile = "equalsums.dat";
+	
+	// Working file
+	char *outfile="equalsums.dat";
 	
 	setlocale(LC_ALL,"");
 	
@@ -243,7 +245,28 @@ int main(int argc, char **argv)
 	printf("Sums list cleared.\n");
 	
 	// =====Code to verify disk file=====
+	printf("\nTesting .dat file\n\n");
+	FILE *fin = fopen(outfile,"rb");
+	if(fin == NULL) {
+		printf("Error: Failed to open file for reading.\n");
+		exit(1);
+	}
+	int in_blk_size;
+	gprime in_buffer[4];
+	fread(&in_blk_size, sizeof(int), 1, fin);
+	while(!(feof(fin))) {
+		printf("Block size: %d\n", in_blk_size);
+		for(int b = 0; b < in_blk_size; ++b) {
+			fread(in_buffer, sizeof(gprime), 4, fin);
+			for(int a = 0; a < 4; ++a) prt_gprime(in_buffer[a]);
+			printf("\n");
+		}
+		fread(&in_blk_size, sizeof(int), 1, fin);
+	}
+	fclose(fin);
+	printf("\nTest complete.\n\n");	
 	// =====End Verify=====
+	
 	// =====Done=====
 	return 0;
 }
