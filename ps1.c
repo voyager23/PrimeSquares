@@ -25,27 +25,6 @@
 
 #include "ps1.h"
 
-gprime equalsums[][4] = // (7.0, 29.0)
-{ 
-	{CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0)},
-	{CMPLX(1.0,6.0),CMPLX(2.0,3.0),CMPLX(2.0,7.0),CMPLX(2.0,13.0)},
-	{CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0)},
-	{CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(2.0,3.0),CMPLX(3.0,10.0)},
-	{CMPLX(1.0,4.0),CMPLX(2.0,5.0),CMPLX(2.0,7.0),CMPLX(2.0,13.0)},
-	{CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(3.0,8.0)},
-	{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,7.0),CMPLX(3.0,8.0)},
-	{CMPLX(1.0,4.0),CMPLX(1.0,10.0),CMPLX(2.0,5.0),CMPLX(3.0,10.0)},
-	{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(1.0,14.0),CMPLX(4.0,5.0)},
-	{CMPLX(1.0,4.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(4.0,9.0)},
-	{CMPLX(1.0,2.0),CMPLX(1.0,14.0),CMPLX(2.0,5.0),CMPLX(3.0,8.0)},
-	{CMPLX(1.0,2.0),CMPLX(1.0,14.0),CMPLX(2.0,3.0),CMPLX(3.0,10.0)},
-	{CMPLX(1.0,2.0),CMPLX(1.0,10.0),CMPLX(2.0,7.0),CMPLX(3.0,10.0)},
-	{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(2.0,13.0),CMPLX(3.0,8.0)},
-	{CMPLX(1.0,2.0),CMPLX(1.0,6.0),CMPLX(1.0,10.0),CMPLX(4.0,11.0)},
-	{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(2.0,13.0),CMPLX(3.0,10.0)},
-	{CMPLX(1.0,2.0),CMPLX(1.0,4.0),CMPLX(1.0,14.0),CMPLX(4.0,9.0)}
-};
-
 const double primes[] =
 { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 
 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 
@@ -76,7 +55,7 @@ const double primes[] =
 //-----Main-----
 int main(int argc, char **argv)
 {
-	const double limit=15.0;
+	const double limit=20.0;	// sqrt(1000) = 31.622
 	double p,q,si,s;
 	int found = 0;
 	
@@ -258,8 +237,8 @@ int main(int argc, char **argv)
 		printf("Block size: %d\n", in_blk_size);
 		for(int b = 0; b < in_blk_size; ++b) {
 			fread(in_buffer, sizeof(gprime), 4, fin);
-			for(int a = 0; a < 4; ++a) prt_gprime(in_buffer[a]);
-			printf("\n");
+			//for(int a = 0; a < 4; ++a) prt_gprime(in_buffer[a]);
+			//printf("\n");
 		}
 		fread(&in_blk_size, sizeof(int), 1, fin);
 	}
