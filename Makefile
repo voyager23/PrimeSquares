@@ -5,7 +5,7 @@
 
 CFLAGS = -Wall -std=c11 -ggdb -Wno-unused-variable -O2
 
-all : dat an ps bs
+all : dat an ps bs hi
 
 dat : dat_analysis.o utilities.o
 	gcc $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o dat dat_analysis.o utilities.o 
@@ -18,6 +18,9 @@ an : analysis.o utilities.o
 	
 bs : block_search.c ps1.h
 	gcc $(CFLAGS)  `pkg-config --cflags --libs glib-2.0 ` -o bs block_search.c
+	
+hi : hello_arg2.c
+	gcc -pthread -o hi hello_arg2.c
 	
 # ----------------------------------------------------------------------
 ps1.o : ps1.c ps1.h

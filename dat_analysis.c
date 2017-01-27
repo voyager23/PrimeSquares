@@ -149,9 +149,7 @@ int main(int argc, char **argv)
 							for(int col=0;col<4;++col) 
 								working_cfg[row][col] *= -1;
 						
-						// permute col2/col3 values and look for column sums == target
-						// if solution found add transpose to GSList Toctas else free transpose matrix
-						
+						// permute col2/col3 values and look for 2 column sums == target
 						gprime swap;
 						for(int row0 = 0; row0 < 2; ++row0) {
 							for(int row1 = 0; row1 < 2; ++row1) {
@@ -160,8 +158,10 @@ int main(int argc, char **argv)
 										// test config
 										gprime colsum2 = transpose[0][2] + transpose[1][2] + transpose[2][2] + transpose[3][2]; 
 										gprime colsum3 = transpose[0][3] + transpose[1][3] + transpose[2][3] + transpose[3][3];
-										if((Target == colsum2)&&(Target == colsum3)) { 
-											// printf(" TOCTA!\t");
+										if((Target == colsum2)&&(Target == colsum3)) {
+											// --------------------------------------------------------------------
+											// At this point the transpose matrix holds a valid Tocta configuration
+											// --------------------------------------------------------------------
 											++toctas;
 										}
 										// swap values in row 3 cols 2 & 3
