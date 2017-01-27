@@ -33,7 +33,8 @@ int main(int argc, char **argv)
 	char *outfile="equalsums.dat";
 	
 	// variables
-	int a,b,c,d,candidates,toctas;
+	int a,b,c,d,candidates;
+	int nRows, toctas, nBlocks, blk;
 	
 	// from typedef gprime Matrix[4][4];
 	Matrix working_cfg;
@@ -50,12 +51,29 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 	
-	int nRows;
-	fread(&nRows, sizeof(int), 1, fin);
-	
-	// loop start
+	// block count code here
+	equalsums = (gpRow*)malloc(sizeof(gprime)*4);
+	nBlocks = 0;
 	while(!(feof(fin))) {
-		printf("nRows: %d\n", nRows);
+		fread(&nRows, sizeof(int), 1, fin);
+		if(feof(fin)) break;
+		++nBlocks;
+		for(int b = 0; b < nRows; ++b) 
+			fread(equalsums, sizeof(gprime), 4, fin);  // read and discard rows
+	}	
+	free(equalsums);
+	// end block count	
+	rewind(fin);	// rewind file pointer
+	
+	printf("Found %d blocks\n", nBlocks);
+		
+	fread(&nRows, sizeof(int), 1, fin);
+	// loop start
+	blk = 0;
+	while(!(feof(fin))) {
+		++blk;
+		printf("\nnRows: %d\n", nRows);
+		printf("Block %d of %d\n",blk,nBlocks);
 		// allocate memory for rows of equalsums
 		equalsums = (gpRow*)malloc(sizeof(gprime)*4*nRows);
 		// populate with rows of gprimes
@@ -163,14 +181,14 @@ int main(int argc, char **argv)
 				} // for c...
 			} // for b ...
 		} // for a ...
-		
+		printf("EqualSum rows scanned: %d\n", nRows);
 		printf("Target: ");
 		prt_gprime(Target);
 		printf("\n");
-		printf("\nEqualSum rows scanned: %d\n", nRows);
 		printf("Number of candidates found: %d\n", candidates);
 		printf("Number of Tocta configurations found: %d\n", toctas);
 		printf("Number of unique Toctas may be %d	(modcheck=%d)\n", toctas/48, toctas%48);
+		free(equalsums);
 		// try to read next block size	
 		fread(&nRows, sizeof(int), 1, fin);
 		

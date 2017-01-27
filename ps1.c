@@ -55,7 +55,7 @@ const double primes[] =
 //-----Main-----
 int main(int argc, char **argv)
 {
-	const double limit=20.0;	// sqrt(1000) = 31.622
+	const double limit=15.0;	// sqrt(1000) = 31.622	use 14 for 28 blocks of data
 	double p,q,si,s;
 	int found = 0;
 	
