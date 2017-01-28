@@ -22,7 +22,7 @@
  */
 
 #include "../ps1.h"
-#include <unistd.h>
+
 
 void *search_routine(void *p);
 
@@ -34,7 +34,8 @@ int main(int argc, char **argv)
 	char *outfile="equalsums.dat";
 	
 	int nBlocks, nRows, block, rc;
-	gpRow *equalsums;	
+	gpRow *equalsums;
+
 	
 	FILE *fin = fopen(outfile,"rb");
 	if(fin == NULL) {
@@ -87,8 +88,16 @@ int main(int argc, char **argv)
 	} while(!(feof(fin)));
 	
 	// join threads here
-	
-	sleep(5);
+	void *status;
+	for(block = 0; block < nBlocks; ++block) {
+		ThreadData *tdp = (thread_data_array + block);
+		rc = pthread_join(tdp->thread_id, &status);
+		if (rc) {
+			printf("ERROR; return code from pthread_join() is %d\n", rc);
+		} else {
+			printf("Joined thread %i\n", tdp->idx);
+		}
+	}
 	
 	// output any results	
 	

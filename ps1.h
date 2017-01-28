@@ -29,6 +29,8 @@
 	#include <complex.h>
 	#include <locale.h>
 	#include <glib.h>
+	#include <pthread.h>
+	#include <unistd.h>
 
 	typedef double complex gprime;	// gprime is 16 bytes
 	
