@@ -27,13 +27,15 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=4
-FILE_NAME_0=9270;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fps1.c;0;4
-FILE_NAME_1=583;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Futilities.c;0;4
-FILE_NAME_2=1030;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fps1.h;0;4
-FILE_NAME_3=932;Make;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2FMakefile;0;4
-FILE_NAME_4=4303;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fdat_analysis.c;0;4
-FILE_NAME_5=5086;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fanalysis.c;0;4
+current_page=7
+FILE_NAME_0=170;Make;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2FMakefile;0;4
+FILE_NAME_1=5025;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fanalysis.c;0;4
+FILE_NAME_2=1024;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fps1.h;0;4
+FILE_NAME_3=583;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Futilities.c;0;4
+FILE_NAME_4=2660;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fps1.c;0;4
+FILE_NAME_5=1011;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fdat_analysis.c;0;4
+FILE_NAME_6=549;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fhello_arg2.c;0;4
+FILE_NAME_7=1461;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fthread_analysis.c;0;4
 
 [VTE]
 last_dir=/home/mike

@@ -19,9 +19,6 @@ an : analysis.o utilities.o
 bs : block_search.c ps1.h
 	gcc $(CFLAGS)  `pkg-config --cflags --libs glib-2.0 ` -o bs block_search.c
 	
-hi : hello_arg2.c
-	gcc -pthread -o hi hello_arg2.c
-	
 # ----------------------------------------------------------------------
 ps1.o : ps1.c ps1.h
 	gcc $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -c ps1.c 

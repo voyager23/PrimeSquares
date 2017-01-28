@@ -55,6 +55,15 @@
 		gprime value;	// last value found
 	}PairDataV3;
 	
+	typedef struct td {
+		pthread_t thread_id;
+		int idx;
+		int nRows;
+		gpRow *row_ptr;
+		int nToctas;
+		int running;
+	}ThreadData;
+	
 	// function declarations
 	int comparedouble (const void * a, const void * b);
 	gint compare_fps(gconstpointer a, gconstpointer b);
