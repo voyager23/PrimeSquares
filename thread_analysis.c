@@ -21,40 +21,88 @@
  * 
  */
 
-
 #include "ps1.h"
-#include <pthread.h>
 
-typedef struct td {
-	int thread_id;
-	int nRows;
-	gpRow *pRow;
-}ThreadData;
 
-GSList *DataBlocks = NULL;
+void *search_routine(void *p);
+
+ThreadData *thread_data_array;
 
 int main(int argc, char **argv)
-{	
-	int in_rows;
-	ThreadData *pThreadData;
-	
+{
 	// Working file
-	char *infile="equalsums.dat";
+	char *outfile="equalsums.dat";
 	
-	FILE *fin = fopen(infile,"rb");
-	if(fin == NULL) {
-		printf("Could not open %s \n", infile);
-		exit(1);
-	
-	do {
-		fread(&in_rows, sizeof(int), 1, fin);
-		if(feof(fin)) break;
-		pThreadData = (ThreadData*)malloc(sizeof(ThreadData));
-		pThreadData->thread_id = -1;
-		pThreadData->nRows = in_rows;
-		pThreadData->pRow = (gpRow*)malloc(sizeof(gprime) * 4 * in_rows);
-		
-		
+	int nBlocks, nRows, block, rc;
+	gpRow *equalsums;
 
+	
+	FILE *fin = fopen(outfile,"rb");
+	if(fin == NULL) {
+		printf("Error: Failed to open data file for reading.\n");
+		exit(1);
+	}
+	
+	// block count code here
+	equalsums = (gpRow*)malloc(sizeof(gprime)*4);
+	nBlocks = 0;
+	while(!(feof(fin))) {
+		fread(&nRows, sizeof(int), 1, fin);
+		if(feof(fin)) break;
+		++nBlocks;
+		for(int b = 0; b < nRows; ++b) 
+			fread(equalsums, sizeof(gprime), 4, fin);  // read and discard rows
+	}	
+	free(equalsums);
+	// end block count	
+
+	
+	thread_data_array = (ThreadData*)malloc(sizeof(ThreadData) * nBlocks);
+	
+	// Rewind and read the data file, allocating and populating blocks of data
+	// for each thread. Save values in each ThreadData structure;
+	rewind(fin);
+	block = 0;	
+	do {
+		fread(&nRows, sizeof(int), 1, fin);
+		if(!feof(fin)) {
+			ThreadData *tdp = (thread_data_array + block);
+			// set rows
+			tdp->nRows = nRows;
+			// allocate memory
+			tdp->row_ptr = (gpRow*)malloc(sizeof(gprime)*4*nRows);
+			// populate with rows of gprimes
+			fread(tdp->row_ptr, sizeof(gprime), 4*nRows, fin);
+			tdp->nToctas = -1;
+			tdp->running = -1;
+			tdp->idx = block;
+			tdp->nBlocks = nBlocks;
+			//printf("Launching block %i\n", block);
+			// launch thread here
+			rc = pthread_create(&(tdp->thread_id), NULL, search_routine, (void*)tdp);
+			if (rc) {
+				printf("ERROR; return code from pthread_create() is %d\n", rc);
+				exit(-1);
+			}
+			++block;
+		}
+	} while(!(feof(fin)));
+	
+	// join threads here
+	void *status;
+	for(block = 0; block < nBlocks; ++block) {
+		ThreadData *tdp = (thread_data_array + block);
+		rc = pthread_join(tdp->thread_id, &status);
+		if (rc) {
+			printf("ERROR; return code from pthread_join() is %d\n", rc);
+		}
+	}
+
+	printf("\nScanned %d blocks\n", nBlocks);
+
+	//-----Cleanup-----
+	for(int b = 0; b < nBlocks; ++b) free((thread_data_array + b)->row_ptr);
+	free(thread_data_array);
+	return 0;
 }
 
