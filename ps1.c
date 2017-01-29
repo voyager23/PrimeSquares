@@ -55,7 +55,8 @@ const double primes[] =
 //-----Main-----
 int main(int argc, char **argv)
 {
-	const double limit=12.0;	// sqrt(1000) = 31.622	use 14 for 28 blocks of data
+	// limit 18 produces 48 blocks. Threaded scan (all cores) takes 3m 06s
+	const double limit=14.0;	// sqrt(1000) = 31.622	use 14 for 28 blocks of data
 	double p,q,si,s;
 	int found = 0;
 	
@@ -90,8 +91,6 @@ int main(int argc, char **argv)
 	printf("4_index search space = %'d\n",(found*(found-1)*(found-2)*(found-3)));
 	
 	
-	// write code to sort list of gprimes in ascending order based on magnitude of real and imag components
-	// GCompareFunc() returns int, (gconstpointer a, gconstpointer b)
 	printf("Sorting list...");
 	head = g_slist_sort(head,compare_gprime);
 	printf("complete.\n");

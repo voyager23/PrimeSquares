@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	}	
 	free(equalsums);
 	// end block count	
-	printf("Found %d blocks\n", nBlocks);
+
 	
 	thread_data_array = (ThreadData*)malloc(sizeof(ThreadData) * nBlocks);
 	
@@ -76,7 +76,8 @@ int main(int argc, char **argv)
 			tdp->nToctas = -1;
 			tdp->running = -1;
 			tdp->idx = block;
-			printf("Launching block %i\n", block);
+			tdp->nBlocks = nBlocks;
+			//printf("Launching block %i\n", block);
 			// launch thread here
 			rc = pthread_create(&(tdp->thread_id), NULL, search_routine, (void*)tdp);
 			if (rc) {
@@ -94,13 +95,11 @@ int main(int argc, char **argv)
 		rc = pthread_join(tdp->thread_id, &status);
 		if (rc) {
 			printf("ERROR; return code from pthread_join() is %d\n", rc);
-		} else {
-			printf("Joined thread %i\n", tdp->idx);
 		}
 	}
-	
-	// output any results	
-	
+
+	printf("\nScanned %d blocks\n", nBlocks);
+
 	//-----Cleanup-----
 	for(int b = 0; b < nBlocks; ++b) free((thread_data_array + b)->row_ptr);
 	free(thread_data_array);

@@ -61,6 +61,7 @@
 		pthread_t thread_id;
 		int idx;
 		int nRows;
+		int nBlocks;
 		gpRow *row_ptr;
 		int nToctas;
 		int running;

@@ -24,15 +24,28 @@
 
 #include "../ps1.h"
 
+#if(0)
+	// No compile - Reference only
+	typedef struct td {
+		pthread_t thread_id;
+		int idx;
+		int nRows;
+		gpRow *row_ptr;
+		int nToctas;
+		int running;
+	}ThreadData;
+	// End No Compile
+#endif	
+
 void * search_routine(void *tdp) {
 		
 	int my_idx = ((ThreadData*)tdp)->idx;	
-	printf("\tIn search_routine %i.\n", my_idx);
 	// code for tocta search
 	Matrix working_cfg;
 	Matrix transpose;
 	PairData pdarray[4];	// use an array of PairData
 	int nRows = ((ThreadData*)tdp)->nRows;
+	int nBlocks = ((ThreadData*)tdp)->nBlocks;
 	gpRow *equalsums = ((ThreadData*)tdp)->row_ptr;
 	gprime Target = equalsums[0][0] + equalsums[0][1] + equalsums[0][2] + equalsums[0][3];
 		
@@ -136,14 +149,15 @@ void * search_routine(void *tdp) {
 			} // for c...
 		} // for b ...
 	} // for a ...
-	printf("EqualSum rows scanned: %d\n", nRows);
+	printf("\n%i\\%i) EqualSum rows scanned: %d\n", my_idx+1, nBlocks, nRows);
 	printf("Target: ");
 	prt_gprime(Target);
 	printf("\n");
 	printf("Number of candidates found: %d\n", candidates);
 	printf("Number of Tocta configurations found: %d\n", toctas);
 	printf("Number of unique Toctas may be %d	(modcheck=%d)\n", toctas/48, toctas%48);
-	free(equalsums);
+	// Done in Calling routine
+	//	free(equalsums);
 		
 	// search terminated
 	pthread_exit(NULL);
