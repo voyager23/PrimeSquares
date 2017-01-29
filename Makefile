@@ -4,7 +4,7 @@
 
 .PHONY : clean all
 
-CFLAGS = -Wall -std=c11 -ggdb -Wno-unused-variable -Wno-unused-result -O2
+CFLAGS = -Wall -std=c11 -ggdb -Wno-unused-variable -Wno-unused-result -O2 -mtune=native
 
 all : dat an ps bs ta
 

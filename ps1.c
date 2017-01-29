@@ -56,8 +56,19 @@ const double primes[] =
 //-----Main-----
 int main(int argc, char **argv)
 {
+	double limit;
+	if(argc == 2) {
+		sscanf(argv[1], "%lf", &limit);
+	} else {
+		limit = 14.0;
+	}
+	
+	printf("Limit: %0.0lf\n", limit);
+	
+	// exit(0);
+		
 	// limit 18 produces 48 blocks. Threaded scan (all cores) takes 3m 06s
-	const double limit=14.0;	// sqrt(1000) = 31.622	use 14 for 28 blocks of data
+	// const double limit=14.0;	// sqrt(1000) = 31.622	use 14 for 28 blocks of data
 	double p,q,si,s;
 	int found = 0;
 	
@@ -224,6 +235,7 @@ int main(int argc, char **argv)
 	printf("Sums list cleared.\n");
 	
 	// =====Code to verify disk file=====
+	int nBlocks = 0;
 	printf("\nTesting .dat file\n\n");
 	FILE *fin = fopen(outfile,"rb");
 	if(fin == NULL) {
@@ -234,6 +246,7 @@ int main(int argc, char **argv)
 	gprime in_buffer[4];
 	fread(&in_blk_size, sizeof(int), 1, fin);
 	while(!(feof(fin))) {
+		++nBlocks;
 		printf("Block size: %d\n", in_blk_size);
 		for(int b = 0; b < in_blk_size; ++b) {
 			fread(in_buffer, sizeof(gprime), 4, fin);
@@ -243,7 +256,7 @@ int main(int argc, char **argv)
 		fread(&in_blk_size, sizeof(int), 1, fin);
 	}
 	fclose(fin);
-	printf("\nTest complete.\n\n");	
+	printf("\nRead %d blocks. Test complete.\n\n", nBlocks);	
 	// =====End Verify=====
 	
 	// =====Done=====
