@@ -18,15 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 
- */
-
-
-#include "../ps1.h"
-
-#if(0)
-	// No compile - Reference only
-	typedef struct td {
+ * 	typedef struct td {
 		pthread_t thread_id;
 		int idx;
 		int nRows;
@@ -34,9 +26,14 @@
 		int nToctas;
 		int running;
 	}ThreadData;
-	// End No Compile
-#endif	
+ * 
+ * 
+ */
 
+
+#include "../ps1.h"
+
+// ----------Thread function----------
 void * search_routine(void *tdp) {
 		
 	int my_idx = ((ThreadData*)tdp)->idx;	
@@ -48,6 +45,11 @@ void * search_routine(void *tdp) {
 	int nBlocks = ((ThreadData*)tdp)->nBlocks;
 	gpRow *equalsums = ((ThreadData*)tdp)->row_ptr;
 	gprime Target = equalsums[0][0] + equalsums[0][1] + equalsums[0][2] + equalsums[0][3];
+	char filename[64];
+	// Construct the output filename here
+	sprintf(filename, "Tocta-%i-%i.dat", (int)creal(Target), (int)cimag(Target));
+	
+	// Open output file for writing
 		
 	// select 4 rows from equal sums array
 	int candidates = 0;
@@ -129,6 +131,7 @@ void * search_routine(void *tdp) {
 									if((Target == colsum2)&&(Target == colsum3)) {
 										// --------------------------------------------------------------------
 										// At this point the transpose matrix holds a valid Tocta configuration
+										// Write Matrix transpose to output file
 										// --------------------------------------------------------------------
 										++toctas;
 									}
@@ -140,7 +143,6 @@ void * search_routine(void *tdp) {
 							}
 							// swap values in row 1 cols 2 & 3
 							swap = transpose[1][2]; transpose[1][2] = transpose[1][3]; transpose[1][3] = swap;
-
 						}
 						// swap values in row 0 cols 2 & 3
 						swap = transpose[0][2]; transpose[0][2] = transpose[0][3]; transpose[0][3] = swap;
@@ -156,12 +158,15 @@ void * search_routine(void *tdp) {
 	printf("Number of candidates found: %d\n", candidates);
 	printf("Number of Tocta configurations found: %d\n", toctas);
 	printf("Number of unique Toctas may be %d	(modcheck=%d)\n", toctas/48, toctas%48);
-	// Done in Calling routine
-	//	free(equalsums);
+	printf("Results in %s\n", filename);
+
+	// Close output file
 		
 	// search terminated
 	pthread_exit(NULL);
 }
+
+// ----------Functions----------
 
 int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb)
 {
