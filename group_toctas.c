@@ -21,6 +21,7 @@
  * 
  */
 
+// =====================================================================
 
 #include "ps1.h"
 
@@ -29,15 +30,50 @@ typedef struct sigtrans {
 	Matrix transpose;
 }SigTrans;
 
+int qsort_signature_compare(gconstpointer a, gconstpointer b);
+int qsort_sig_wrapper(gconstpointer a, gconstpointer b);
+
+int qsort_sig_wrapper(gconstpointer a, gconstpointer b) {	
+	// The wrapper receives the data from each list element in the form of a gconstpointer.
+	// This points to a SigTrans structure.
+	// The qsort_signature_compare function parameters are assumed to be Signature*.
+	// 1) Get pointers to the signature
+	// 2) Cast pointers and call qsort_signature_compare
+	// 3) Return result
+	
+	Signature *siga = &(((SigTrans*)a)->signature);
+	Signature *sigb = &(((SigTrans*)b)->signature);
+	
+	return( qsort_signature_compare( (gconstpointer)siga, (gconstpointer)sigb ) );	
+}
+
+int qsort_signature_compare(gconstpointer a, gconstpointer b) {
+	// Require MSB first
+	// if *a > *b return -1, if *a < *b return +1 else return 0
+	// We assume a and b can be cast to Signature*.
+	
+	Signature *pa = (Signature*)a;
+	Signature *pb = (Signature*)b;
+	int rv;
+	for(int idx = 0; idx < 12; ++idx) {
+		rv = compare_gprime((gconstpointer)pa++, (gconstpointer)pb++);
+		// if a < b rv = -1 so invert return value
+		if(rv != 0) return( -(rv) );
+	}
+	return 0;
+}
+
+// =====================================================================
+
 int main(int argc, char **argv)
 {
 	char *fname26 = "blocks/Tocta-12-26.blk";	// 144 configs (3 groups)
 	char *fname28 = "blocks/Tocta-12-28.blk";	// 192 configs (4 groups)
-	GSList *working, *inlist = NULL;
+	GSList *working, *inlist = NULL, *outlist = NULL;
 	SigTrans *st;
 	FILE *fin;
 	
-	fin = fopen(fname26,"rb");
+	fin = fopen(fname28,"rb");
 	if(fin == NULL) {
 		printf("Unable to open %s ... stopping.\n", fname26);
 		exit(1);
@@ -53,26 +89,53 @@ int main(int argc, char **argv)
 		}
 	} while(!(feof(fin)));	
 	fclose(fin);
-	
-	// for each entry in inlist
-	//		read 12 gprimes from the transpose in signature
-	//		qsort signature (ascending)
+
 	working = inlist;
+	SigTrans *stp;
 	while(working != NULL) {
-		SigTrans *stp = working->data;
+		stp = working->data;
+		// read 12 gprimes from the transpose in signature
 		int sig_idx = 0;
 		for(int row = 0; row < 4; ++row) {
 			for(int col = 1; col < 4; ++col) {
-				stp->signature[sig_idx] = stp->transpose[row][col];
+				stp->signature[sig_idx++] = stp->transpose[row][col];
 			}
-		}
+		}	
+		// qsort signature (msb first)
+		qsort((void*)stp->signature, 12, sizeof(gprime), qsort_signature_compare);
+		// next
 		working = working->next;
 	}
 	
+	printf("Inlist has %u elements.\n", g_slist_length(inlist));
+	// Sort the inlist by signature
+	inlist = g_slist_sort(inlist, qsort_sig_wrapper);
+	printf("Inlist has %u elements.\n", g_slist_length(inlist));
 	
-
+	Signature working_sig;
+	for(int x = 0; x < 12; ++x) working_sig[x] = CMPLX(0.0,0.0);
+	working = inlist;
+	int rv;
+	while(working != NULL) {
+		stp = working->data;
+		rv = 0;
+		for(int x = 0; x < 12; ++x) {
+			rv = compare_gprime( &working_sig[x], &stp->signature[x]);
+			if(rv != 0) break;
+		}
+		if( rv != 0 ) {			
+			//for(int x = 0; x < 12; ++x) prt_gprime(working_sig[x]);
+			printf("\n");
+			for(int x = 0; x < 12; ++x) prt_gprime(stp->signature[x]);
+			printf("\n");
+			// copy new signature to working_signature
+			for(int x = 0; x < 12; ++x) working_sig[x] = stp->signature[x];
+		}
+		working = g_slist_next(working);
+	}
 	
-	
+	// Cleanup code
+	printf("\n");
 	g_slist_free_full(inlist, free);
 	return 0;
 }
