@@ -48,7 +48,7 @@ void * search_routine(void *tdp) {
 	char filename[64];
 	FILE *fout;
 	// Construct the output filename here
-	sprintf(filename, "Tocta-%i-%i.blk", (int)creal(Target), (int)cimag(Target));
+	sprintf(filename, "blocks/Tocta-%i-%i.blk", (int)creal(Target), (int)cimag(Target));
 	
 	// Open output file for writing
 	fout = fopen(filename,"wb");

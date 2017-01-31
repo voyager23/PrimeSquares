@@ -27,12 +27,12 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=3
-FILE_NAME_0=2785;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fpthreads%2Fthread_analysis.c;0;4
-FILE_NAME_1=5889;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fpthreads%2Fsearch_routine.c;0;4
-FILE_NAME_2=1683;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fps1.h;0;4
-FILE_NAME_3=2732;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fps1.c;0;4
-FILE_NAME_4=0;Make;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fpthreads%2FMakefile;0;4
+current_page=4
+FILE_NAME_0=912;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fps1.c;0;4
+FILE_NAME_1=1138;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fps1.h;0;4
+FILE_NAME_2=373;Make;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2FMakefile;0;4
+FILE_NAME_3=0;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Futilities.c;0;4
+FILE_NAME_4=1802;C;0;EUTF-8;1;1;0;%2Fhome%2Fmike%2Fwdir%2FPrime_Squares%2Fgroup_toctas.c;0;4
 
 [VTE]
 last_dir=/home/mike

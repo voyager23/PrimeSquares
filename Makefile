@@ -6,7 +6,10 @@
 
 CFLAGS = -Wall -std=c11 -ggdb -Wno-unused-variable -Wno-unused-result -O2 -mtune=native
 
-all : dat an ps bs ta
+all : dat an ps bs ta gt
+
+gt : group_toctas.o utilities.o ps1.h
+	gcc group_toctas.o utilities.o $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o gt
 
 dat : dat_analysis.o utilities.o
 	gcc dat_analysis.o utilities.o $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o dat 
@@ -35,6 +38,9 @@ dat_analysis.o : dat_analysis.c ps1.h
 	
 utilities.o : utilities.c ps1.h
 	gcc -c utilities.c $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` 
+	
+group_toctas.o : group_toctas.c ps1.h
+	gcc -c group_toctas.c $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` 
 	
 
 #-----------------------------------------------------------------------	

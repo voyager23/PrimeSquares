@@ -37,6 +37,8 @@
 	typedef gprime gpRow[4];
 	
 	typedef gprime Matrix[4][4];
+	
+	typedef gprime Signature[12];
 
 	typedef struct fps {
 		gprime total;

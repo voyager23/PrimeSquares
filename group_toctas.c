@@ -24,9 +24,56 @@
 
 #include "ps1.h"
 
+typedef struct sigtrans {
+	Signature signature;
+	Matrix transpose;
+}SigTrans;
+
 int main(int argc, char **argv)
 {
+	char *fname26 = "blocks/Tocta-12-26.blk";	// 144 configs (3 groups)
+	char *fname28 = "blocks/Tocta-12-28.blk";	// 192 configs (4 groups)
+	GSList *working, *inlist = NULL;
+	SigTrans *st;
+	FILE *fin;
 	
+	fin = fopen(fname26,"rb");
+	if(fin == NULL) {
+		printf("Unable to open %s ... stopping.\n", fname26);
+		exit(1);
+	}
+	
+	do {
+		st = (SigTrans*)malloc(sizeof(SigTrans));
+		fread(&(st->transpose), sizeof(Matrix), 1, fin);
+		if(feof(fin)) {
+			free(st);
+		} else {
+		inlist = g_slist_prepend(inlist, st);
+		}
+	} while(!(feof(fin)));	
+	fclose(fin);
+	
+	// for each entry in inlist
+	//		read 12 gprimes from the transpose in signature
+	//		qsort signature (ascending)
+	working = inlist;
+	while(working != NULL) {
+		SigTrans *stp = working->data;
+		int sig_idx = 0;
+		for(int row = 0; row < 4; ++row) {
+			for(int col = 1; col < 4; ++col) {
+				stp->signature[sig_idx] = stp->transpose[row][col];
+			}
+		}
+		working = working->next;
+	}
+	
+	
+
+	
+	
+	g_slist_free_full(inlist, free);
 	return 0;
 }
 
