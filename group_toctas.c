@@ -112,25 +112,11 @@ int main(int argc, char **argv)
 	inlist = g_slist_sort(inlist, qsort_sig_wrapper);
 	printf("Inlist has %u elements.\n", g_slist_length(inlist));
 	
-	Signature working_sig;
-	for(int x = 0; x < 12; ++x) working_sig[x] = CMPLX(0.0,0.0);
 	working = inlist;
-	int rv;
 	while(working != NULL) {
 		stp = working->data;
-		rv = 0;
-		for(int x = 0; x < 12; ++x) {
-			rv = compare_gprime( &working_sig[x], &stp->signature[x]);
-			if(rv != 0) break;
-		}
-		if( rv != 0 ) {			
-			//for(int x = 0; x < 12; ++x) prt_gprime(working_sig[x]);
-			printf("\n");
-			for(int x = 0; x < 12; ++x) prt_gprime(stp->signature[x]);
-			printf("\n");
-			// copy new signature to working_signature
-			for(int x = 0; x < 12; ++x) working_sig[x] = stp->signature[x];
-		}
+		for(int x = 0; x < 12; ++x) prt_gprime( stp->signature[x] );
+		printf("\n");
 		working = g_slist_next(working);
 	}
 	
