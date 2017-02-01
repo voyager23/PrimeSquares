@@ -69,11 +69,12 @@ int main(int argc, char **argv)
 {
 	char *fname26 = "blocks/Tocta-12-26.blk";	// 144 configs (3 groups)
 	char *fname28 = "blocks/Tocta-12-28.blk";	// 192 configs (4 groups)
+	char *fname31 = "blocks/Tocta-17-31.blk";	// 
 	GSList *working, *inlist = NULL, *outlist = NULL;
 	SigTrans *st;
 	FILE *fin;
 	
-	fin = fopen(fname28,"rb");
+	fin = fopen(fname31,"rb");
 	if(fin == NULL) {
 		printf("Unable to open %s ... stopping.\n", fname26);
 		exit(1);
@@ -106,21 +107,63 @@ int main(int argc, char **argv)
 		// next
 		working = working->next;
 	}
+	const int len_inlist = g_slist_length(inlist);
+	printf("Inlist has %u elements.\n", len_inlist);
 	
-	printf("Inlist has %u elements.\n", g_slist_length(inlist));
-	// Sort the inlist by signature
-	inlist = g_slist_sort(inlist, qsort_sig_wrapper);
-	printf("Inlist has %u elements.\n", g_slist_length(inlist));
+	// New Code based on sorting each SigTrans into an output list.
+	// Each SigTrans in the same sublist will have exactly matching signatures.
+	// Initially allocate and initialise an array of GSList*.
+	// Array size = length(inlist); This is the maximum possible, subject to
+	// later change.
 	
-	working = inlist;
-	while(working != NULL) {
-		stp = working->data;
-		for(int x = 0; x < 12; ++x) prt_gprime( stp->signature[x] );
-		printf("\n");
-		working = g_slist_next(working);
+	// Array of GSList* to sublists
+	int match, idx_out;
+	GSList **aOut;
+	SigTrans *stp_in, *stp_out;
+	aOut = (GSList**)malloc(sizeof(GSList*) * len_inlist);
+	for(idx_out = 0; idx_out < len_inlist; ++idx_out) aOut[idx_out] = NULL;
+	// Scan the inlist
+	GSList *pInlist = inlist;
+	while(pInlist != NULL) {
+		stp_in = pInlist->data;	// SigTrans*
+		if(aOut[0] == NULL) {	// Empty outlist
+			aOut[0] = g_slist_prepend( aOut[0], stp );
+		} else {	// check outlist for matching signatures
+			idx_out = 0;
+			while(aOut[idx_out] != NULL) {
+				stp_out = aOut[idx_out]->data;
+				match = 1;
+				for(int x = 0; x < 12; ++x) {
+					if(stp_in->signature[x] != stp_out->signature[x]) {
+						match = 0;
+						break;	// Not equal - stop checking
+					}
+				}
+				if(match == 1) {	// Add SigTrans* to matching List
+					aOut[idx_out] = g_slist_prepend(aOut[idx_out], stp_in);
+					break;	// break from outlist scan
+				}
+				++idx_out;
+			} // while...
+			if(aOut[idx_out] == NULL) {	// No match found, start new sublist
+				aOut[idx_out] = g_slist_prepend( aOut[idx_out], stp_in);
+			} // if ...
+		} // else
+			pInlist = pInlist->next;
+	} // while..
+	
+	
+	int sublists = 0;
+	idx_out = 0;
+	while((aOut[idx_out] != NULL)&&(idx_out < len_inlist)) {
+		++sublists;
+		++idx_out;
 	}
 	
+	printf("%d sublists.\n", sublists);	
+	
 	// Cleanup code
+	free(aOut);
 	printf("\n");
 	g_slist_free_full(inlist, free);
 	return 0;

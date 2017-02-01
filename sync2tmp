@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+rsync -av /home/mike/wdir/PrimeSquares ~/tmp
