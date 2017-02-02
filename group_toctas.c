@@ -32,6 +32,7 @@ typedef struct sigtrans {
 
 int qsort_signature_compare(gconstpointer a, gconstpointer b);
 int qsort_sig_wrapper(gconstpointer a, gconstpointer b);
+void prt_sigtrans(SigTrans *stp, int idx);
 
 int qsort_sig_wrapper(gconstpointer a, gconstpointer b) {	
 	// The wrapper receives the data from each list element in the form of a gconstpointer.
@@ -63,6 +64,25 @@ int qsort_signature_compare(gconstpointer a, gconstpointer b) {
 	return 0;
 }
 
+void prt_sigtrans(SigTrans *stp, int idx) {
+	for(int row = 0; row < 4; ++row) {
+		if(row == 0) {
+			printf("%02d)\t", idx);
+		} else {
+			printf("\t");
+		}
+		for(int col = 0; col < 4; ++col) {			
+			prt_gprime(stp->transpose[row][col]);
+		}
+		printf("\t");
+		for(int col = 0; col < 3; ++col) {
+			prt_gprime(stp->signature[row*3 + col]);
+		}
+		printf("\n");
+	}
+	printf("\n");	
+}
+
 // =====================================================================
 
 int main(int argc, char **argv)
@@ -70,11 +90,13 @@ int main(int argc, char **argv)
 	char *fname26 = "blocks/Tocta-12-26.blk";	// 144 configs (3 groups)
 	char *fname28 = "blocks/Tocta-12-28.blk";	// 192 configs (4 groups)
 	char *fname31 = "blocks/Tocta-17-31.blk";	// 
+	char *fname35 = "blocks/Tocta-13-35.blk";	//
+	
 	GSList *working, *inlist = NULL, *outlist = NULL;
 	SigTrans *st;
 	FILE *fin;
 	
-	fin = fopen(fname31,"rb");
+	fin = fopen(fname26,"rb");
 	if(fin == NULL) {
 		printf("Unable to open %s ... stopping.\n", fname26);
 		exit(1);
@@ -159,8 +181,24 @@ int main(int argc, char **argv)
 		++sublists;
 		++idx_out;
 	}
+	printf("Expected %d sublists.\n", (len_inlist/48));
+	printf("Found %d sublists.\n", sublists);
 	
-	printf("%d sublists.\n", sublists);	
+	idx_out = 0;
+	while((aOut[idx_out] != NULL)&&(idx_out < len_inlist)) {
+		int llen = g_slist_length(aOut[idx_out]);
+		if(llen > 48) {
+			printf("Length = %d\n", llen);
+			GSList *lp = aOut[idx_out];
+			int x = 1;
+			while(lp != NULL) {
+				prt_sigtrans(lp->data, x++);
+				lp = lp->next;
+			}
+			exit(0);
+		}
+		++idx_out;
+	}
 	
 	// Cleanup code
 	free(aOut);
