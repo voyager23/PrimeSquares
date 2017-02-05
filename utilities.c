@@ -45,13 +45,13 @@ gint compare_gprime(gconstpointer a, gconstpointer b)
 {
 	double a_real,b_real,a_imag,b_imag;
 	
-	a_real = creal(*(double complex*)a);
-	b_real = creal(*(double complex*)b);
+	a_real = creal(*(gprime*)a);
+	b_real = creal(*(gprime*)b);
 	if(a_real < b_real) return -1;
 	if(a_real > b_real) return +1;
 	// test imag components
-	a_imag = cimag(*(double complex*)a);
-	b_imag = cimag(*(double complex*)b);
+	a_imag = cimag(*(gprime*)a);
+	b_imag = cimag(*(gprime*)b);
 	if(a_imag < b_imag) return -1;
 	if(a_imag > b_imag) return +1;
 	// Equal return 0;
@@ -193,3 +193,56 @@ int transpose_wcfg(gprime *wcfg, PairData *pdat, int idx_a_dest, int idx_b_dest)
 	return(0);
 }
 
+
+int qsort_sig_wrapper(gconstpointer a, gconstpointer b) {	
+	// The wrapper receives the data from each list element in the form of a gconstpointer.
+	// This points to a SigTrans structure.
+	// The qsort_signature_compare function parameters are assumed to be Signature*.
+	// 1) Get pointers to the signature
+	// 2) Cast pointers and call qsort_signature_compare
+	// 3) Return result
+	
+	Signature *siga = &(((SigTrans*)a)->signature);
+	Signature *sigb = &(((SigTrans*)b)->signature);
+	
+	return( qsort_signature_compare( (gconstpointer)siga, (gconstpointer)sigb ) );	
+}
+
+int qsort_signature_compare(gconstpointer a, gconstpointer b) {
+	// Require MSB first
+	// if *a > *b return -1, if *a < *b return +1 else return 0
+	// We assume a and b can be cast to Signature*.
+	
+	Signature *pa = (Signature*)a;
+	Signature *pb = (Signature*)b;
+	int rv;
+	for(int idx = 0; idx < 12; ++idx) {
+		rv = compare_gprime((gconstpointer)pa++, (gconstpointer)pb++);
+		// if a < b rv = -1 so invert return value
+		if(rv != 0) return( -(rv) );
+	}
+	return 0;
+}
+
+void prt_sigtrans(SigTrans *stp, int idx) {
+	for(int row = 0; row < 4; ++row) {
+		if(row == 0) {
+			printf("%02d)\t", idx);
+		} else {
+			printf("\t");
+		}
+		for(int col = 0; col < 4; ++col) {			
+			prt_gprime(stp->transpose[row][col]);
+		}
+		printf("\t");
+		for(int col = 0; col < 3; ++col) {
+			prt_gprime(stp->signature[row*3 + col]);
+		}
+		printf("\n");
+	}
+	printf("\n");	
+}
+
+
+
+// ----------------------------------------------------------------------

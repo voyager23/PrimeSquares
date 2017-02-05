@@ -69,6 +69,11 @@
 		int running;
 	}ThreadData;
 	
+	typedef struct sigtrans {
+		Signature signature;
+		Matrix transpose;
+	}SigTrans;
+	
 	// function declarations
 	int comparedouble (const void * a, const void * b);
 	gint compare_fps(gconstpointer a, gconstpointer b);
@@ -78,7 +83,10 @@
 	int count_pairs_V2(PairData *pd, gprime *working_cfg, int rowa, int rowb);
 	int count_pairs_V3(PairDataV3 *pd3, gprime *working_cfg, int rowa, int rowb);
 	int transpose_wcfg(gprime *wcfg, PairData *pdat, int row_a_dest, int row_b_dest);
-
+	int qsort_signature_compare(gconstpointer a, gconstpointer b);
+	int qsort_sig_wrapper(gconstpointer a, gconstpointer b);
+	void prt_sigtrans(SigTrans *stp, int idx);
+	int equal_transpose(SigTrans *stpa, SigTrans *stpb);
 	
 	// Convenience Macros
 	#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))

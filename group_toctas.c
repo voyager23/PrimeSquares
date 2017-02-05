@@ -25,62 +25,20 @@
 
 #include "ps1.h"
 
-typedef struct sigtrans {
-	Signature signature;
-	Matrix transpose;
-}SigTrans;
-
-int qsort_signature_compare(gconstpointer a, gconstpointer b);
-int qsort_sig_wrapper(gconstpointer a, gconstpointer b);
-void prt_sigtrans(SigTrans *stp, int idx);
-
-int qsort_sig_wrapper(gconstpointer a, gconstpointer b) {	
-	// The wrapper receives the data from each list element in the form of a gconstpointer.
-	// This points to a SigTrans structure.
-	// The qsort_signature_compare function parameters are assumed to be Signature*.
-	// 1) Get pointers to the signature
-	// 2) Cast pointers and call qsort_signature_compare
-	// 3) Return result
-	
-	Signature *siga = &(((SigTrans*)a)->signature);
-	Signature *sigb = &(((SigTrans*)b)->signature);
-	
-	return( qsort_signature_compare( (gconstpointer)siga, (gconstpointer)sigb ) );	
-}
-
-int qsort_signature_compare(gconstpointer a, gconstpointer b) {
-	// Require MSB first
-	// if *a > *b return -1, if *a < *b return +1 else return 0
-	// We assume a and b can be cast to Signature*.
-	
-	Signature *pa = (Signature*)a;
-	Signature *pb = (Signature*)b;
-	int rv;
-	for(int idx = 0; idx < 12; ++idx) {
-		rv = compare_gprime((gconstpointer)pa++, (gconstpointer)pb++);
-		// if a < b rv = -1 so invert return value
-		if(rv != 0) return( -(rv) );
+int equal_transpose(SigTrans *stpa, SigTrans *stpb) {
+	// transpose is a 4*4 matrix of gprime
+	// testing for equal gprimes in corresponding locations
+	// Returns 0 - no error - if transpose matrixes are equal
+	int rv = 1;
+	int idx;
+	gprime *gpa = (gprime*)&(stpa->transpose);
+	gprime *gpb = (gprime*)&(stpb->transpose);
+	for(idx = 0; idx < 16; ++idx) {
+		printf("%d\n", idx);
+		rv = compare_gprime((gpa + idx), (gpb + idx));
+		if(rv != 0) break;
 	}
-	return 0;
-}
-
-void prt_sigtrans(SigTrans *stp, int idx) {
-	for(int row = 0; row < 4; ++row) {
-		if(row == 0) {
-			printf("%02d)\t", idx);
-		} else {
-			printf("\t");
-		}
-		for(int col = 0; col < 4; ++col) {			
-			prt_gprime(stp->transpose[row][col]);
-		}
-		printf("\t");
-		for(int col = 0; col < 3; ++col) {
-			prt_gprime(stp->signature[row*3 + col]);
-		}
-		printf("\n");
-	}
-	printf("\n");	
+	return rv;
 }
 
 // =====================================================================
@@ -177,6 +135,7 @@ int main(int argc, char **argv)
 	
 	int sublists = 0;
 	idx_out = 0;
+	int llen;
 	while((aOut[idx_out] != NULL)&&(idx_out < len_inlist)) {
 		++sublists;
 		++idx_out;
@@ -184,10 +143,11 @@ int main(int argc, char **argv)
 	printf("Expected %d sublists.\n", (len_inlist/48));
 	printf("Found %d sublists.\n", sublists);
 	
+	// Sublist length analysis
 	idx_out = 0;
 	while((aOut[idx_out] != NULL)&&(idx_out < len_inlist)) {
-		int llen = g_slist_length(aOut[idx_out]);
-		if(llen > 48) {
+		llen = g_slist_length(aOut[idx_out]);
+		if(llen > 0) {
 			printf("Length = %d\n", llen);
 			GSList *lp = aOut[idx_out];
 			int x = 1;
@@ -195,10 +155,44 @@ int main(int argc, char **argv)
 				prt_sigtrans(lp->data, x++);
 				lp = lp->next;
 			}
-			exit(0);
+			// exit(0);
 		}
 		++idx_out;
 	}
+	
+	// Unique Tocta analysis
+	idx_out = 0;
+	while((aOut[idx_out] != NULL)&&(idx_out < len_inlist)) {
+		GSList *lp = aOut[idx_out];
+		llen = 0;
+		while(lp != NULL) {
+			++llen;
+			lp = lp->next;
+		}		
+		printf("Testing list %d of length %d\n", idx_out, llen);
+		// confirm all transposes in this list are different
+		lp = aOut[idx_out]; // reset list pointer
+		int a,b,i,rv;
+		for(a = 0; a < (llen - 1); ++a) {
+			for(b = a + 1; b < llen; ++b) {				
+				SigTrans *sta = (SigTrans*)((lp + a)->data);
+				Matrix *ma = &sta->transpose;
+				SigTrans *stb = (SigTrans*)((lp + b)->data);
+				Matrix *mb = &stb->transpose;
+				gprime *gpa = (gprime*)ma;
+				gprime *gpb = (gprime*)mb;
+				printf("%d) %02d / %02d...", idx_out, a, b);
+				// now compare 2 matrixes of 16 gprimes looking for inequality
+				for(i = 0; i < 16; i++) {					
+					rv = compare_gprime( gpa + i, gpb + i ); // rv == 0 for equality
+					if(rv != 0) break;
+				} // for i
+				if(rv != 0) printf("no ");
+				printf("match found.\n");			
+			} // for b...
+		} // for a...
+		++idx_out;
+	}		
 	
 	// Cleanup code
 	free(aOut);
