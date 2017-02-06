@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	SigTrans *st;
 	FILE *fin;
 	
-	fin = fopen(fname26,"rb");
+	fin = fopen(fname35,"rb");
 	if(fin == NULL) {
 		printf("Unable to open %s ... stopping.\n", fname26);
 		exit(1);
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	fclose(fin);
 
 	working = inlist;
-	SigTrans *stp;
+	SigTrans *stp, *stpa;
 	while(working != NULL) {
 		stp = working->data;
 		// read 12 gprimes from the transpose in signature
@@ -91,111 +91,57 @@ int main(int argc, char **argv)
 	printf("Inlist has %u elements.\n", len_inlist);
 	
 	// New Code based on sorting each SigTrans into an output list.
-	// Each SigTrans in the same sublist will have exactly matching signatures.
-	// Initially allocate and initialise an array of GSList*.
-	// Array size = length(inlist); This is the maximum possible, subject to
-	// later change.
+	// Each SigTrans in the same sublist will have exactly matching signatures.	
 	
-	// Array of GSList* to sublists
-	int match, idx_out;
-	GSList **aOut;
-	SigTrans *stp_in, *stp_out;
-	aOut = (GSList**)malloc(sizeof(GSList*) * len_inlist);
-	for(idx_out = 0; idx_out < len_inlist; ++idx_out) aOut[idx_out] = NULL;
-	// Scan the inlist
-	GSList *pInlist = inlist;
-	while(pInlist != NULL) {
-		stp_in = pInlist->data;	// SigTrans*
-		if(aOut[0] == NULL) {	// Empty outlist
-			aOut[0] = g_slist_prepend( aOut[0], stp );
-		} else {	// check outlist for matching signatures
-			idx_out = 0;
-			while(aOut[idx_out] != NULL) {
-				stp_out = aOut[idx_out]->data;
-				match = 1;
-				for(int x = 0; x < 12; ++x) {
-					if(stp_in->signature[x] != stp_out->signature[x]) {
-						match = 0;
-						break;	// Not equal - stop checking
-					}
-				}
-				if(match == 1) {	// Add SigTrans* to matching List
-					aOut[idx_out] = g_slist_prepend(aOut[idx_out], stp_in);
-					break;	// break from outlist scan
-				}
-				++idx_out;
-			} // while...
-			if(aOut[idx_out] == NULL) {	// No match found, start new sublist
-				aOut[idx_out] = g_slist_prepend( aOut[idx_out], stp_in);
-			} // if ...
-		} // else
-			pInlist = pInlist->next;
-	} // while..
-	
-	
-	int sublists = 0;
-	idx_out = 0;
-	int llen;
-	while((aOut[idx_out] != NULL)&&(idx_out < len_inlist)) {
-		++sublists;
-		++idx_out;
-	}
-	printf("Expected %d sublists.\n", (len_inlist/48));
-	printf("Found %d sublists.\n", sublists);
-	
-	// Sublist length analysis
-	idx_out = 0;
-	while((aOut[idx_out] != NULL)&&(idx_out < len_inlist)) {
-		llen = g_slist_length(aOut[idx_out]);
-		if(llen > 0) {
-			printf("Length = %d\n", llen);
-			GSList *lp = aOut[idx_out];
-			int x = 1;
-			while(lp != NULL) {
-				prt_sigtrans(lp->data, x++);
-				lp = lp->next;
-			}
-			// exit(0);
-		}
-		++idx_out;
-	}
-	
-	// Unique Tocta analysis
-	idx_out = 0;
-	while((aOut[idx_out] != NULL)&&(idx_out < len_inlist)) {
-		GSList *lp = aOut[idx_out];
-		llen = 0;
+	GSList *ListOfLists = NULL, *lp;
+	GSList *head;
+	// Read a series of SigTrans from inlist and assign to sublists headed in ListOfLists
+	working = inlist;
+	while(working != NULL) {
+		stp = working->data;
+		// distribute SigTrans
+		lp = ListOfLists;
 		while(lp != NULL) {
-			++llen;
-			lp = lp->next;
-		}		
-		printf("Testing list %d of length %d\n", idx_out, llen);
-		// confirm all transposes in this list are different
-		lp = aOut[idx_out]; // reset list pointer
-		int a,b,i,rv;
-		for(a = 0; a < (llen - 1); ++a) {
-			for(b = a + 1; b < llen; ++b) {				
-				SigTrans *sta = (SigTrans*)((lp + a)->data);
-				Matrix *ma = &sta->transpose;
-				SigTrans *stb = (SigTrans*)((lp + b)->data);
-				Matrix *mb = &stb->transpose;
-				gprime *gpa = (gprime*)ma;
-				gprime *gpb = (gprime*)mb;
-				printf("%d) %02d / %02d...", idx_out, a, b);
-				// now compare 2 matrixes of 16 gprimes looking for inequality
-				for(i = 0; i < 16; i++) {					
-					rv = compare_gprime( gpa + i, gpb + i ); // rv == 0 for equality
-					if(rv != 0) break;
-				} // for i
-				if(rv != 0) printf("no ");
-				printf("match found.\n");			
-			} // for b...
-		} // for a...
-		++idx_out;
-	}		
+			GSList* head = lp->data;
+			stpa = head->data;
+			// test sigs here
+			gprime *pa = (gprime*)&stp->signature;
+			gprime *pb = (gprime*)&stpa->signature;
+			int match = 1;
+			for(int x = 0; x < 12; ++x) {
+				if ( compare_gprime( pa + x, pb + x) != 0 ) {
+					match = 0;
+					break;
+				}
+			}
+			if( match ) {
+				head = g_slist_prepend(head, stp); // add entry to this sublist
+				lp->data = head;
+				break;
+			} // if...
+			lp = g_slist_next(lp);
+		}
+		if(lp == NULL) { // no matches found, add new sublist to ListOfLists
+			head = NULL;
+			head = g_slist_prepend(head,stp);
+			ListOfLists = g_slist_prepend(ListOfLists,head);
+		}
+		// end distribute SigTrans	
+		working = g_slist_next(working);
+	}
 	
+	// publish the sublist lengths
+	lp = ListOfLists;
+	int count = 0;
+	while(lp != NULL) {
+		++count;
+		head = lp->data;
+		printf("Sublist length: %u\n", g_slist_length(head));
+		lp = g_slist_next(lp);
+	}
+	printf("Count %d\n",count);
+		
 	// Cleanup code
-	free(aOut);
 	printf("\n");
 	g_slist_free_full(inlist, free);
 	return 0;
