@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	if(argc == 2) {
 		sscanf(argv[1], "%lf", &limit);
 	} else {
-		limit = 18.0;
+		limit = 16.0;
 	}
 	
 	printf("Limit: %0.0lf\n", limit);

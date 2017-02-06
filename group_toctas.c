@@ -44,19 +44,20 @@ int equal_transpose(SigTrans *stpa, SigTrans *stpb) {
 // =====================================================================
 
 int main(int argc, char **argv)
-{
-	char *fname26 = "blocks/Tocta-12-26.blk";	// 144 configs (3 groups)
-	char *fname28 = "blocks/Tocta-12-28.blk";	// 192 configs (4 groups)
-	char *fname31 = "blocks/Tocta-17-31.blk";	// 
-	char *fname35 = "blocks/Tocta-14-36.blk";	//
-	
+{	
 	GSList *working, *inlist = NULL, *outlist = NULL;
 	SigTrans *st;
 	FILE *fin;
 	
-	fin = fopen(fname35,"rb");
+	if(argc != 2) {
+		printf("Usage: >./gt relative-path/Tocta-aa-bb.blk\n");
+		exit(0);
+	}		
+	
+	fin = fopen(argv[1],"rb");
+	
 	if(fin == NULL) {
-		printf("Unable to open %s ... stopping.\n", fname26);
+		printf("Unable to open %s ... stopping.\n", argv[1]);
 		exit(1);
 	}
 	
