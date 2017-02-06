@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 	char *fname26 = "blocks/Tocta-12-26.blk";	// 144 configs (3 groups)
 	char *fname28 = "blocks/Tocta-12-28.blk";	// 192 configs (4 groups)
 	char *fname31 = "blocks/Tocta-17-31.blk";	// 
-	char *fname35 = "blocks/Tocta-13-35.blk";	//
+	char *fname35 = "blocks/Tocta-14-36.blk";	//
 	
 	GSList *working, *inlist = NULL, *outlist = NULL;
 	SigTrans *st;
@@ -135,8 +135,9 @@ int main(int argc, char **argv)
 	int count = 0;
 	while(lp != NULL) {
 		++count;
-		head = lp->data;
-		printf("Sublist length: %u\n", g_slist_length(head));
+		int length = g_slist_length(lp->data);
+		if (length > 48)
+			printf("Sublist:%d		length: %u\n", count, g_slist_length(lp->data));
 		lp = g_slist_next(lp);
 	}
 	printf("Count %d\n",count);
