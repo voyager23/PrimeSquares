@@ -70,7 +70,8 @@
 	}ThreadData;
 	
 	typedef struct sigtrans {
-		Signature signature;
+		Signature sig_major;
+		Signature sig_minor;
 		Matrix transpose;
 	}SigTrans;
 	
@@ -84,6 +85,7 @@
 	int count_pairs_V3(PairDataV3 *pd3, gprime *working_cfg, int rowa, int rowb);
 	int transpose_wcfg(gprime *wcfg, PairData *pdat, int row_a_dest, int row_b_dest);
 	int qsort_signature_compare(gconstpointer a, gconstpointer b);
+	int qsort_column0_compare(gconstpointer a, gconstpointer b);
 	int qsort_sig_wrapper(gconstpointer a, gconstpointer b);
 	void prt_sigtrans(SigTrans *stp, int idx);
 	int equal_transpose(SigTrans *stpa, SigTrans *stpb);

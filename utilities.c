@@ -202,8 +202,8 @@ int qsort_sig_wrapper(gconstpointer a, gconstpointer b) {
 	// 2) Cast pointers and call qsort_signature_compare
 	// 3) Return result
 	
-	Signature *siga = &(((SigTrans*)a)->signature);
-	Signature *sigb = &(((SigTrans*)b)->signature);
+	Signature *siga = &(((SigTrans*)a)->sig_major);
+	Signature *sigb = &(((SigTrans*)b)->sig_major);
 	
 	return( qsort_signature_compare( (gconstpointer)siga, (gconstpointer)sigb ) );	
 }
@@ -224,6 +224,13 @@ int qsort_signature_compare(gconstpointer a, gconstpointer b) {
 	return 0;
 }
 
+int qsort_column0_compare(gconstpointer a, gconstpointer b) {
+	// MSB first
+	// if *a > *b return -1, if *a < *b return +1 else return 0;
+	return -1;
+}
+
+
 void prt_sigtrans(SigTrans *stp, int idx) {
 	for(int row = 0; row < 4; ++row) {
 		if(row == 0) {
@@ -236,8 +243,10 @@ void prt_sigtrans(SigTrans *stp, int idx) {
 		}
 		printf("\t");
 		for(int col = 0; col < 3; ++col) {
-			prt_gprime(stp->signature[row*3 + col]);
+			prt_gprime(stp->sig_major[row*3 + col]);
 		}
+		printf("\t");
+		prt_gprime(stp->sig_minor[row]);
 		printf("\n");
 	}
 	printf("\n");	

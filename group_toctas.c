@@ -76,18 +76,30 @@ int main(int argc, char **argv)
 	SigTrans *stp, *stpa;
 	while(working != NULL) {
 		stp = working->data;
-		// read 12 gprimes from the transpose in signature
+		
+		// read 12 gprimes from the transpose into signature array
 		int sig_idx = 0;
 		for(int row = 0; row < 4; ++row) {
 			for(int col = 1; col < 4; ++col) {
-				stp->signature[sig_idx++] = stp->transpose[row][col];
-			}
-		}	
-		// qsort signature (msb first)
-		qsort((void*)stp->signature, 12, sizeof(gprime), qsort_signature_compare);
-		// next
+				stp->sig_minor[sig_idx] = CMPLX(0,0);	// clear the minor signature
+				stp->sig_major[sig_idx] = stp->transpose[row][col];	// set major signature
+				sig_idx++;
+			} // for col...
+		} // for row...
+		
+		sig_idx = 0;
+		for(int row = 0; row < 4; ++row) stp->sig_minor[sig_idx++] = stp->transpose[row][0];
+		
+		// qsort major signature (msb first)
+		qsort((void*)stp->sig_major, 12, sizeof(gprime), qsort_signature_compare);
+		
+		// qsort minor signature (msb first)
+		qsort((void*)stp->sig_minor, 12, sizeof(gprime), qsort_signature_compare);
+		
+		// next SigTrans
 		working = working->next;
-	}
+	} // while working....
+	
 	const int len_inlist = g_slist_length(inlist);
 	printf("Inlist has %u elements.\n", len_inlist);
 	
@@ -106,21 +118,24 @@ int main(int argc, char **argv)
 			GSList* head = lp->data;
 			stpa = head->data;
 			// test sigs here
-			gprime *pa = (gprime*)&stp->signature;
-			gprime *pb = (gprime*)&stpa->signature;
+			gprime *pa = (gprime*)&stp->sig_major;
+			gprime *pb = (gprime*)&stpa->sig_major;
+			gprime *pc = (gprime*)&stp->sig_minor;
+			gprime *pd = (gprime*)&stpa->sig_minor;
 			int match = 1;
 			for(int x = 0; x < 12; ++x) {
-				if ( compare_gprime( pa + x, pb + x) != 0 ) {
+				if ((compare_gprime(pa+x,pb+x) != 0 )||(compare_gprime(pc+x,pd+x) != 0)) {
 					match = 0;
 					break;
 				}
 			}
-			if( match ) {
+			if(match == 1) {
 				head = g_slist_prepend(head, stp); // add entry to this sublist
 				lp->data = head;
 				break;
-			} // if...
-			lp = g_slist_next(lp);
+			} else {
+				lp = g_slist_next(lp);
+			}
 		}
 		if(lp == NULL) { // no matches found, add new sublist to ListOfLists
 			head = NULL;
@@ -137,8 +152,16 @@ int main(int argc, char **argv)
 	while(lp != NULL) {
 		++count;
 		int length = g_slist_length(lp->data);
-		if (length > 48)
+		if (length > 0) {
 			printf("Sublist:%d		length: %u\n", count, g_slist_length(lp->data));
+			GSList *slp = lp->data;
+			int idx = 0;
+			while(slp != NULL) {
+				idx++;
+				prt_sigtrans((SigTrans*)slp->data, idx);
+				slp = g_slist_next(slp);
+			} // while ...
+		}
 		lp = g_slist_next(lp);
 	}
 	printf("Count %d\n",count);
