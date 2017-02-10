@@ -49,6 +49,7 @@ int main(int argc, char **argv)
 	SigTrans *st;
 	FILE *fin;
 	
+	
 	if(argc != 2) {
 		printf("Usage: >./gt relative-path/Tocta-aa-bb.blk\n");
 		exit(0);
@@ -149,9 +150,11 @@ int main(int argc, char **argv)
 	// publish the sublist lengths
 	lp = ListOfLists;
 	int count = 0;
+	int accumulator = 0;
 	while(lp != NULL) {
 		++count;
 		int length = g_slist_length(lp->data);
+		accumulator += length;
 		if (length > 0) {
 			printf("Sublist:%d		length: %u\n", count, g_slist_length(lp->data));
 			GSList *slp = lp->data;
@@ -165,6 +168,7 @@ int main(int argc, char **argv)
 		lp = g_slist_next(lp);
 	}
 	printf("Count %d\n",count);
+	printf("Length of inlist %d		Accumulated results %d\n", len_inlist, accumulator);
 		
 	// Cleanup code
 	printf("\n");
