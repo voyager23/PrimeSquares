@@ -26,7 +26,24 @@
 
 int main(int argc, char **argv)
 {
+	// Establish a SigTrans for testing;
+	SigTrans *data;	 
+	data = (SigTrans*)malloc(sizeof(SigTrans));
 	
-	return 0;
+	data = init_sigtrans(data);
+	if(data == NULL) {
+		printf("init_sigtrans returned NULL.\n");
+		exit(1);
+	}
+
+	prt_sigtrans(data, 0);
+	
+	data = gt_apply_abcd(data);
+	
+	prt_sigtrans(data, 0);
+	
+	
+	// Cleanup code
+	free(data);	
 }
 

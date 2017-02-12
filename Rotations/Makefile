@@ -9,7 +9,7 @@ CFLAGS = -Wall -std=c11 -ggdb -Wno-unused-variable -Wno-unused-result
 all : sym
 
 sym : symmetries.o lib_sym.o ../ps1.h
-	gcc symmetries.o lib_sym.o $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o sym
+	gcc symmetries.o lib_sym.o ../utilities.o $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o sym
 
 # ----------------------------------------------------------------------
 

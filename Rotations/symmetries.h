@@ -24,5 +24,12 @@
 
 #include "../ps1.h"
 
+SigTrans* init_sigtrans(SigTrans *st);
+
+SigTrans* gt_apply_abcd(SigTrans *st);
+void gt_apply_ef(SigTrans *st);
+void gt_apply_bd(SigTrans *st);
+void gt_apply_ac(SigTrans *st);
+
 
 

@@ -92,7 +92,7 @@
 	
 	// Convenience Macros
 	#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))
-	#define prt_gprime(a) printf("(%d,%di)  ", (int)creal(a), (int)cimag(a))
+	#define prt_gprime(a) printf("(%2d,%2di)  ", (int)creal(a), (int)cimag(a))
 	
 	
 	

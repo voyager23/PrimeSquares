@@ -88,11 +88,11 @@ void apply_ef(struct tocta *t) {
 	primes[7]=t->primes[3];
 	
 	primes[8]=t->primes[1];
-	primes[9]=t->primes[5];
+	primes[9]=t->primes[5];		
 	primes[10]=t->primes[6];
 	primes[11]=t->primes[7];
 	
-	primes[12]=t->primes[5];
+	primes[12]=t->primes[5];	// error?
 	primes[13]=t->primes[9];
 	primes[14]=t->primes[10];
 	primes[15]=t->primes[11];
