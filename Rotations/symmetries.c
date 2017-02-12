@@ -35,14 +35,52 @@ int main(int argc, char **argv)
 		printf("init_sigtrans returned NULL.\n");
 		exit(1);
 	}
-
-	prt_sigtrans(data, 0);
+	int index = 0;
+	for(int abcd = 0; abcd < 2; ++abcd) {
+		for(int bd = 0; bd < 4; ++bd) {
+			for(int ef = 0; ef < 4; ++ef) {
+				prt_sigtrans(data, index++ );
+				data = gt_apply_ef(data);
+				if(data == NULL) {
+					printf("ef returned NULL.\n");
+					exit(1);
+				}			
+			} // for ef...
+			data = gt_apply_bd(data);
+			if(data == NULL) {
+				printf("bd returned NULL.\n");
+				exit(1);
+			} 			
+		} // for bd...
+		
+		data = gt_apply_ac(data);
+		
+		for(int ef = 0; ef < 4; ++ef) {
+			prt_sigtrans(data, index++ );
+			data = gt_apply_ef(data);
+			if(data == NULL) {
+				printf("ef returned NULL.\n");
+				exit(1);
+			}			
+		} // for ef...
+		
+		data = gt_apply_ac(data);
+		data = gt_apply_ac(data);
+		for(int ef = 0; ef < 4; ++ef) {
+			prt_sigtrans(data, index++ );
+			data = gt_apply_ef(data);
+			if(data == NULL) {
+				printf("ef returned NULL.\n");
+				exit(1);
+			}			
+		} // for ef...
+		// Restore initial config - have 24 configs
+		data = gt_apply_ac(data);
+		// reflect
+		data = gt_apply_abcd(data);
+	}
 	
-	data = gt_apply_abcd(data);
-	
-	prt_sigtrans(data, 0);
-	
-	
+	prt_sigtrans(data,999);
 	// Cleanup code
 	free(data);	
 }

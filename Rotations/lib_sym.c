@@ -63,6 +63,7 @@ SigTrans* gt_apply_abcd(SigTrans *st) {
 		data->sig_major[x] = st->sig_major[x];
 		data->sig_minor[x] = CMPLX(0.0,0.0);
 	}
+	
 	// copy gprimes to new locations as required
 	// The swap proceeds row by row
 	for(int row = 0; row < 4; ++row) {
@@ -87,23 +88,130 @@ SigTrans* gt_apply_abcd(SigTrans *st) {
 		
 		
 //----------------------------------------------------------------------
-void gt_apply_ef(SigTrans *st) {
-	gprime gprimes[16];
-	gprime *st_prime = (gprime*)(&(st->transpose));
-
+SigTrans* gt_apply_ef(SigTrans *data) {
+	
+	// Complete rewrite of rotation about vertical axis ef.
+	// This can be done in situ without allocating a new SigTrans
+	if(data != NULL) {
+		gprime temp;
+		// swap gprimes to new locations as required
+		for(int col = 0; col < 4; ++col) {
+			temp = data->transpose[3][col];
+			data->transpose[3][col] = data->transpose[2][col];
+			data->transpose[2][col] = data->transpose[1][col];
+			data->transpose[1][col] = data->transpose[0][col];
+			data->transpose[0][col] = temp;
+		}
+		// update sig_minor
+		for(int row = 0; row < 4; ++row) data->sig_minor[row] = data->transpose[row][0];
+		// qsort minor signature (msb first)
+		qsort((void*)data->sig_minor, 12, sizeof(gprime), qsort_signature_compare);
+	}
+	return data;
 }
 
 //----------------------------------------------------------------------
-void gt_apply_bd(SigTrans *st) {
-	gprime gprimes[16];
-	gprime *st_prime = (gprime*)(&(st->transpose));
 
+SigTrans* gt_apply_bd(SigTrans *st) {
+	// complete rewrite of rotation about horizontal axis bd
+	// Allocate a new SigTrans;
+	// Copy sig_major;
+	// Copy gprimes to locations in new transpose as required
+	// Update and sort sig_minor for new config
+	// free(old pointer);
+	// return new pointer
+	
+	SigTrans *data = (SigTrans*)malloc(sizeof(SigTrans));
+	if(data != NULL) {
+		// copy sig_major, zeroise sig_minor;
+		for(int x = 0; x < 12; ++x) {
+			data->sig_major[x] = st->sig_major[x];
+			data->sig_minor[x] = CMPLX(0.0,0.0);
+		}
+		
+		// copy gprimes to new locations as required
+		// copy 12 values from cols 1 to 3	
+		data->transpose[0][1] = st->transpose[1][3];	
+		data->transpose[0][2] = st->transpose[0][3];	
+		data->transpose[0][3] = st->transpose[2][3];	
+		//
+		data->transpose[1][1] = st->transpose[1][2];	
+		data->transpose[1][2] = st->transpose[0][1];	
+		data->transpose[1][3] = st->transpose[1][1];	
+		//
+		data->transpose[2][1] = st->transpose[3][2];	
+		data->transpose[2][2] = st->transpose[0][2];	
+		data->transpose[2][3] = st->transpose[2][2];	
+		//
+		data->transpose[3][1] = st->transpose[3][3];	
+		data->transpose[3][2] = st->transpose[3][1];	
+		data->transpose[3][3] = st->transpose[2][1];
+			
+		// copy 4 values from col 1 to col 0;
+		data->transpose[0][0] = data->transpose[3][1];
+		data->transpose[1][0] = data->transpose[0][1];
+		data->transpose[2][0] = data->transpose[1][1];
+		data->transpose[3][0] = data->transpose[2][1];
+		
+		// update sig_minor
+		for(int row = 0; row < 4; ++row) data->sig_minor[row] = data->transpose[row][0];
+		// qsort minor signature (msb first)
+		qsort((void*)data->sig_minor, 12, sizeof(gprime), qsort_signature_compare);
+	}
+	free(st);	
+	return data;
 }
 
 //----------------------------------------------------------------------
-void gt_apply_ac(SigTrans *st){
-	gprime gprimes[16];
-	gprime *st_prime = (gprime*)(&(st->transpose));
+
+SigTrans* gt_apply_ac(SigTrans *st){
+	// complete rewrite of rotation about horizontal axis ac
+	// Allocate a new SigTrans;
+	// Copy sig_major;
+	// Copy gprimes to locations in new transpose as required
+	// Update and sort sig_minor for new config
+	// free(old pointer);
+	// return new pointer
+	
+	SigTrans *data = (SigTrans*)malloc(sizeof(SigTrans));
+	if(data != NULL) {
+		// copy sig_major, zeroise sig_minor;
+		for(int x = 0; x < 12; ++x) {
+			data->sig_major[x] = st->sig_major[x];
+			data->sig_minor[x] = CMPLX(0.0,0.0);
+		}
+		
+		// copy gprimes to new locations as required
+		// copy 12 values from cols 1 to 3	
+		data->transpose[0][1] = st->transpose[0][2];	
+		data->transpose[0][2] = st->transpose[3][1];	
+		data->transpose[0][3] = st->transpose[0][1];	
+		//
+		data->transpose[1][1] = st->transpose[2][2];	
+		data->transpose[1][2] = st->transpose[3][2];	
+		data->transpose[1][3] = st->transpose[1][2];	
+		//
+		data->transpose[2][1] = st->transpose[2][3];	
+		data->transpose[2][2] = st->transpose[2][1];	
+		data->transpose[2][3] = st->transpose[1][1];	
+		//
+		data->transpose[3][1] = st->transpose[0][3];	
+		data->transpose[3][2] = st->transpose[3][3];	
+		data->transpose[3][3] = st->transpose[1][3];
+			
+		// copy 4 values from col 1 to col 0;
+		data->transpose[0][0] = data->transpose[3][1];
+		data->transpose[1][0] = data->transpose[0][1];
+		data->transpose[2][0] = data->transpose[1][1];
+		data->transpose[3][0] = data->transpose[2][1];
+		
+		// update sig_minor
+		for(int row = 0; row < 4; ++row) data->sig_minor[row] = data->transpose[row][0];
+		// qsort minor signature (msb first)
+		qsort((void*)data->sig_minor, 12, sizeof(gprime), qsort_signature_compare);		
+	} // if ...
+	free(st);
+	return data;
 
 }
 
