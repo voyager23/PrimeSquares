@@ -26,6 +26,7 @@
 
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include <stdbool.h>
 	#include <complex.h>
 	#include <locale.h>
 	#include <glib.h>
@@ -73,6 +74,7 @@
 		Signature sig_major;
 		Signature sig_minor;
 		Matrix transpose;
+		bool found;
 	}SigTrans;
 	
 	// function declarations
@@ -89,6 +91,7 @@
 	int qsort_sig_wrapper(gconstpointer a, gconstpointer b);
 	void prt_sigtrans(SigTrans *stp, int idx);
 	int equal_transpose(SigTrans *stpa, SigTrans *stpb);
+	int wrapper_equal_transpose(gconstpointer a, gconstpointer b);
 	
 	// Convenience Macros
 	#define nth_gprime(head,n) *((gprime*)g_slist_nth_data(head,n))

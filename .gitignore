@@ -12,9 +12,13 @@ dat
 hi
 ta
 gt
+sym
+lt
 
 # Local data files
 blocks/*
+*.txt
+
 
 
 

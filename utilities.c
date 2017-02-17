@@ -249,8 +249,37 @@ void prt_sigtrans(SigTrans *stp, int idx) {
 		prt_gprime(stp->sig_minor[row]);
 		printf("\n");
 	}
-	printf("\n");	
+#if(1)
+	if(stp->found == true) {
+		printf("\tUsed");
+	} else {
+		printf("\tNot used");
+	}
+#endif
+		printf("\n");	
 }
+
+int equal_transpose(SigTrans *stpa, SigTrans *stpb) {
+	// transpose is a 4*4 matrix of gprime
+	// testing for equal gprimes in corresponding locations
+	// Returns 0 - no error - if transpose matrixes are equal
+	int rv = 1;
+	int idx;
+	gprime *gpa = (gprime*)&(stpa->transpose);
+	gprime *gpb = (gprime*)&(stpb->transpose);
+	for(idx = 0; idx < 16; ++idx) {
+		//printf("%d\n", idx);
+		rv = compare_gprime((gpa + idx), (gpb + idx));
+		if(rv != 0) break;
+	}
+	return rv;
+}
+
+int wrapper_equal_transpose(gconstpointer a, gconstpointer b) {
+	
+	return equal_transpose((SigTrans*)a, (SigTrans*)b);
+}
+
 
 
 

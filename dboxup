@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-cp -a /home/mike/wdir/Prime_Squares /home/mike/Dropbox/Prime_Squares.new
-mv /home/mike/Dropbox/Prime_Squares /home/mike/Dropbox/Prime_Squares.old
-mv /home/mike/Dropbox/Prime_Squares.new /home/mike/Dropbox/Prime_Squares
+cp -a /home/mike/wdir/PrimeSquares /home/mike/Dropbox/PrimeSquares.new
+mv /home/mike/Dropbox/PrimeSquares /home/mike/Dropbox/PrimeSquares.old
+mv /home/mike/Dropbox/PrimeSquares.new /home/mike/Dropbox/PrimeSquares
 ls -l  /home/mike/Dropbox
 
