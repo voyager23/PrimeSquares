@@ -249,7 +249,7 @@ void prt_sigtrans(SigTrans *stp, int idx) {
 		prt_gprime(stp->sig_minor[row]);
 		printf("\n");
 	}
-#if(1)
+#if(0)
 	if(stp->found == true) {
 		printf("\tUsed");
 	} else {

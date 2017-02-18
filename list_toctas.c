@@ -18,12 +18,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
+ * 17Feb2017 complete rewrite using double linked lists.
+ * As each transpose is calculated it is removed from the Inlist
+ * and added to a sublist.
+ * Each sublist is added to the Groups list
+ * 
  * 
  */
 
 #include "symmetries.h"
 
-#define STPTR(a) ((SigTrans*)(a->data))
+#define STPTR(glistptr) ((SigTrans*)(glistptr->data))
+
+#define USED(glistptr) (STPTR(glistptr)->found)
 
 #define DEBUGSTOP {printf("\nDebug stop\n");exit(0);}
 
@@ -31,7 +38,7 @@
 
 int main(int argc, char **argv)
 {
-	GSList *InList = NULL, *source;
+	GList *InList = NULL, *source;
 	SigTrans *stp;
 	FILE *fin;
 		
@@ -50,7 +57,7 @@ int main(int argc, char **argv)
 		if(feof(fin)) {
 			free(stp);
 		} else {
-		InList = g_slist_prepend(InList, stp);
+		InList = g_list_prepend(InList, stp);
 		}
 	} while(!(feof(fin)));	
 	fclose(fin);
@@ -58,7 +65,7 @@ int main(int argc, char **argv)
 	// Set up the signatures and flags for each list entry
 	source = InList;
 	while(source != NULL) {
-		stp = source->data;		
+		stp = STPTR(source);	
 		// read 12 gprimes from the transpose into sig_major
 		int sig_idx = 0;
 		for(int row = 0; row < 4; ++row) {
@@ -81,130 +88,122 @@ int main(int argc, char **argv)
 		source = source->next;
 	} // while source....
 	
-	const int len_inlist = g_slist_length(InList);
+	const int len_inlist = g_list_length(InList);
 	printf("InList has %u elements.\n", len_inlist);
 	
-	// Add InList integrity checks here???
-	// All sig_major must be equal
-	// other tests .....
-	// debug exit
-	
-	GSList *scan, *Groups = NULL;
-
+	GList *scan, *sublist, *Groups = NULL;
 	SigTrans *data;
-	
-	// loop start
-	do {
-		source = InList;
-		while(source != NULL) {
-			if(STPTR(source)->found != true) break;
-			source = g_slist_next(source);
-		}
-		if(source != NULL) {
-			data = STPTR(source);
-			// data points to unused config
-			// main loop - expects a SigTrans *data to base configuration
-			GSList *sublist = (GSList*)malloc(sizeof(GSList*));
-			sublist = NULL;
-			int index = 0;
-			for(int abcd = 0; abcd < 2; ++abcd) {
-				for(int bd = 0; bd < 4; ++bd) {
-					for(int ef = 0; ef < 4; ++ef) {
-						data = gt_apply_ef(data);
-						if(data == NULL) {
-							printf("ef returned NULL.\n");
-							exit(1);
-						}			
-						if(DEBUG)
-							prt_sigtrans(data, index++ );	// optional printout
-						scan = g_slist_find_custom(InList, data, wrapper_equal_transpose);
-						if(scan == NULL) {
-							printf("1: Did not find transpose in InList.\n");
-							exit(1);
-						}
-						// mark as found
-						STPTR(scan)->found = true;						
-					} // for ef...
-					data = gt_apply_bd(data);
-					if(data == NULL) {
-						printf("bd returned NULL.\n");
-						exit(1);
-					} 			
-				} // for bd...
-				
-				data = gt_apply_ac(data);
-				
-				for(int ef = 0; ef < 4; ++ef) {					
-					data = gt_apply_ef(data);
-					if(data == NULL) {
-						printf("ef returned NULL.\n");
-						exit(1);
-					}			
-					if(DEBUG)
-						prt_sigtrans(data, index++ );	// optional printout
-					scan = g_slist_find_custom(InList, data, wrapper_equal_transpose);
+	while(InList != NULL) {
+		data = STPTR(InList);
+		sublist = NULL;		
+		for(int abcd = 0; abcd < 2; ++abcd) {
+			for(int bd = 0; bd < 4; ++bd) {
+				for(int ef = 0; ef < 4; ++ef) {
+					// find equal transpose
+					scan = g_list_find_custom(InList, data, wrapper_equal_transpose);
 					if(scan == NULL) {
-						printf("2: Did not find transpose in InList.\n");
+						printf("1: Did not find transpose in InList.\n");
 						exit(1);
 					}
-					// mark as found
-					STPTR(scan)->found = true;						
+					// unlink equal transpose
+					InList = g_list_remove_link(InList,scan);
+					
+					// save in sublist
+					sublist = g_list_prepend(sublist, scan->data);
+					
+					// apply_ef rotation
+					data = gt_apply_ef(data);				
+					
 				} // for ef...
-				
-				data = gt_apply_ac(data);
-				data = gt_apply_ac(data);
-				
-				for(int ef = 0; ef < 4; ++ef) {					
-						data = gt_apply_ef(data);
-						if(data == NULL) {
-							printf("ef returned NULL.\n");
-							exit(1);
-						}			
-						if(DEBUG)
-							prt_sigtrans(data, index++ );	// optional printout
-						scan = g_slist_find_custom(InList, data, wrapper_equal_transpose);
-						if(scan == NULL) {
-							printf("3: Did not find transpose in InList.\n");
-							exit(1);
-						}
-						// mark as found
-						STPTR(scan)->found = true;							
-				} // for ef...
-				
-				// Restore initial config - have 24 configs
-				data = gt_apply_ac(data);
-				
-				// reflect
-				data = gt_apply_abcd(data);
-			} // for abcd...
+				data = gt_apply_bd(data);
+				if(data == NULL) {
+					printf("bd returned NULL.\n");
+					exit(1);
+				} 			
+			} // for bd...
 			
-			// save sublist to groups
-			Groups = g_slist_prepend(Groups, sublist);
+			data = gt_apply_ac(data);
 			
-		} // if source ..
+			for(int ef = 0; ef < 4; ++ef) {					
+				// find equal transpose
+				scan = g_list_find_custom(InList, data, wrapper_equal_transpose);
+				if(scan == NULL) {
+					printf("1: Did not find transpose in InList.\n");
+					exit(1);
+				}
+					// unlink equal transpose
+					InList = g_list_remove_link(InList,scan);
+					
+					// save in sublist
+					sublist = g_list_prepend(sublist, scan->data);
+					
+					// apply_ef rotation
+					data = gt_apply_ef(data);				
+															
+			} // for ef...
+			
+			data = gt_apply_ac(data);
+			data = gt_apply_ac(data);
+			
+			for(int ef = 0; ef < 4; ++ef) {					
+				// find equal transpose
+				scan = g_list_find_custom(InList, data, wrapper_equal_transpose);
+				if(scan == NULL) {
+					printf("1: Did not find transpose in InList.\n");
+					exit(1);
+				}
+				// unlink equal transpose
+				InList = g_list_remove_link(InList,scan);
+				
+				// save in sublist
+				sublist = g_list_prepend(sublist, scan->data);
+				
+				// apply_ef rotation
+				data = gt_apply_ef(data);				
+												
+			} // for ef...
+			
+			// Restore initial config - have 24 configs
+			data = gt_apply_ac(data);
+			
+			// reflect
+			data = gt_apply_abcd(data);
+		} // for abcd...
 		
-		// print out all of InList
-		// todo
-		// print out length of Groups
-		printf("\nLength of Groups = %u\n", g_slist_length(Groups));
-		GSList *grps = Groups;
-		GSList *sublist = grps->data;
-		int index = 0;		
-		while(sublist != NULL) {
-			prt_sigtrans(STPTR(sublist),index++);
-			sublist = g_slist_next(sublist);
-		}
-		
-		// =====DEBUGSTOP=====
-		// DEBUGSTOP
-		
-	} while (source != NULL);
-	
-	
+		Groups = g_list_prepend(Groups, sublist);
+	}
 	
 
+	// output sublists
+	sublist = Groups;
+	while(sublist != NULL) {
+		printf("Sublist has %u elements.\n", g_list_length(sublist->data));
+		int index = 0;
+		scan = sublist->data;	// scan becomes head of GList
+		while(scan != NULL) {
+			prt_sigtrans(STPTR(scan), index++);
+			scan = g_list_next(scan);
+		}
+		sublist = g_list_next(sublist);
+	}
+	
+	printf("Groups has %u elements.\n", g_list_length(Groups));
+	
+	printf("InList has %u elements.\n", g_list_length(InList));
+		
 	// cleanup code
-	g_slist_free(InList);
+	printf("Attempting to free memory.\n");
+	sublist = Groups;
+	while(sublist != NULL) {
+		scan = sublist->data;	// scan is now head of GList
+		while(scan != NULL) {
+			// free(scan);
+			scan = g_list_next(scan);
+		}
+		sublist = g_list_next(sublist);
+	}
+	g_list_free(Groups);
+	
 	return 0;
 }
 
