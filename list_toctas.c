@@ -18,11 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * 17Feb2017 complete rewrite using double linked lists.
- * As each transpose is calculated it is removed from the Inlist
- * and added to a sublist.
- * Each sublist is added to the Groups list
- * 
  * 18Feb2017 Try using arrays instead of lists, developed on use_arrays
  * branch.
  * Executable is ./lta
@@ -33,7 +28,7 @@
 #include "symmetries.h"
 
 #define DEBUGSTOP {printf("\nDebug stop\n");exit(0);}
-#define DEBUG 1
+
 #define REFROTS 48
 
 int main(int argc, char **argv)
@@ -92,13 +87,22 @@ int main(int argc, char **argv)
 		stp = InList + inlist_idx;
 		fread( &((stp)->transpose), sizeof(Matrix), 1, fin);
 		stp->found = false;
+		// setup sig_major
+		for(int row = 0; row < 4; ++row) {
+			for(int col = 1; col < 4; ++col) {
+				stp->sig_major[ (row * 3) + col - 1] = stp->transpose[row][col];
+				stp->sig_minor[ (row * 3) + col - 1] = CMPLX(0.0,0.0);
+			}
+		}							
+		// qsort major signature (msb first)
+		qsort((void*)stp->sig_major, 12, sizeof(gprime), qsort_signature_compare);
+		
+		// set sig_minor
+		for(int row = 0; row < 4; ++row) stp->sig_minor[row] = stp->transpose[row][0];
+		// qsort minor signature (msb first)
+		qsort((void*)stp->sig_minor, 12, sizeof(gprime), qsort_signature_compare);		
 	}
-	// Note - Not setting Signatures since they are not referenced
 	fclose(fin);
-
-
-	
-	// Groups treated as array[nGroups][REFROTS] of SigTrans structures
 	
 	// Set up a workarea SigTrans
 	SigTrans *working = (SigTrans*)malloc(sizeof(SigTrans));	
