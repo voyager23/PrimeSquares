@@ -26,6 +26,7 @@
 
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include <string.h>
 	#include <stdbool.h>
 	#include <complex.h>
 	#include <locale.h>
@@ -71,10 +72,10 @@
 	}ThreadData;
 	
 	typedef struct sigtrans {
-		Signature sig_major;
-		Signature sig_minor;
 		Matrix transpose;
 		bool found;
+		Signature sig_major;
+		Signature sig_minor;
 	}SigTrans;
 	
 	// function declarations

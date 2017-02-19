@@ -18,6 +18,8 @@ lt
 # Local data files
 blocks/*
 *.txt
+*.sav
+memchk*
 
 
 

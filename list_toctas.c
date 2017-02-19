@@ -23,24 +23,28 @@
  * and added to a sublist.
  * Each sublist is added to the Groups list
  * 
+ * 18Feb2017 Try using arrays instead of lists, developed on use_arrays
+ * branch.
+ * Executable is ./lta
+ * 
  * 
  */
 
 #include "symmetries.h"
 
-#define STPTR(glistptr) ((SigTrans*)(glistptr->data))
-
-#define USED(glistptr) (STPTR(glistptr)->found)
-
 #define DEBUGSTOP {printf("\nDebug stop\n");exit(0);}
-
 #define DEBUG 1
+#define REFROTS 48
 
 int main(int argc, char **argv)
 {
-	GList *InList = NULL, *source;
-	SigTrans *stp;
+	SigTrans *InList, *stp, *Groups;
 	FILE *fin;
+	int count;
+	int inlist_idx;
+	int search_idx;
+	int group_idx;
+	int family_idx;
 		
 	if(argc == 2) {
 		fin = fopen(argv[1],"rb");
@@ -51,159 +55,169 @@ int main(int argc, char **argv)
 		printf("Unable to open %s ... stopping.\n", argv[1]);
 		exit(1);
 	}
-	do {
-		stp = (SigTrans*)malloc(sizeof(SigTrans));
-		fread(&(stp->transpose), sizeof(Matrix), 1, fin);
+	
+	count = 0;
+	InList = (SigTrans*)malloc(sizeof(SigTrans));
+	do {		
+		fread(&(InList->transpose), sizeof(Matrix), 1, fin);
 		if(feof(fin)) {
-			free(stp);
+			free(InList);
 		} else {
-		InList = g_list_prepend(InList, stp);
+		++count;
 		}
-	} while(!(feof(fin)));	
+	} while(!(feof(fin)));
+		
+	const int len_inlist = count;
+	printf("Length of inlist = %u\t", len_inlist);
+	printf("Length mod 48 = %u\t", len_inlist % REFROTS);
+	const int nGroups = len_inlist / REFROTS;
+	printf("nGroups = %u\n", nGroups);
+	
+	// Groups will be indexed as [(group_idx * REFROTS) + family_idx]
+	Groups = (SigTrans*)malloc(sizeof(SigTrans) * len_inlist);
+		if(Groups == NULL) {
+		printf("Failed to allocate for groups.\n");
+		exit(1);
+	}
+	
+	InList = (SigTrans*)malloc(sizeof(SigTrans) * len_inlist);
+	if(InList == NULL) {
+		printf("Failed to allocate for inlist.\n");
+		exit(1);
+	}
+	
+	rewind(fin);
+	
+	for(inlist_idx = 0; inlist_idx < len_inlist; ++inlist_idx) {
+		stp = InList + inlist_idx;
+		fread( &((stp)->transpose), sizeof(Matrix), 1, fin);
+		stp->found = false;
+	}
+	// Note - Not setting Signatures since they are not referenced
 	fclose(fin);
-	
-	// Set up the signatures and flags for each list entry
-	source = InList;
-	while(source != NULL) {
-		stp = STPTR(source);	
-		// read 12 gprimes from the transpose into sig_major
-		int sig_idx = 0;
-		for(int row = 0; row < 4; ++row) {
-			for(int col = 1; col < 4; ++col) {
-				stp->sig_minor[sig_idx] = CMPLX(0,0);	// clear the minor signature
-				stp->sig_major[sig_idx] = stp->transpose[row][col];	// set major signature
-				sig_idx++;
-			} // for col...
-		} // for row...
-		// setup sig_minor
-		sig_idx = 0;
-		for(int row = 0; row < 4; ++row) stp->sig_minor[sig_idx++] = stp->transpose[row][0];		
-		// qsort major signature (msb first)
-		qsort((void*)stp->sig_major, 12, sizeof(gprime), qsort_signature_compare);		
-		// qsort minor signature (msb first)
-		qsort((void*)stp->sig_minor, 12, sizeof(gprime), qsort_signature_compare);		
-		// clear 'found' flag
-		stp->found = false;		
-		// next SigTrans
-		source = source->next;
-	} // while source....
-	
-	const int len_inlist = g_list_length(InList);
-	printf("InList has %u elements.\n", len_inlist);
-	
-	GList *scan, *sublist, *Groups = NULL;
-	SigTrans *data;
-	while(InList != NULL) {
-		data = STPTR(InList);
-		sublist = NULL;		
-		for(int abcd = 0; abcd < 2; ++abcd) {
-			for(int bd = 0; bd < 4; ++bd) {
-				for(int ef = 0; ef < 4; ++ef) {
-					// find equal transpose
-					scan = g_list_find_custom(InList, data, wrapper_equal_transpose);
-					if(scan == NULL) {
-						printf("1: Did not find transpose in InList.\n");
-						exit(1);
-					}
-					// unlink equal transpose
-					InList = g_list_remove_link(InList,scan);
-					
-					// save in sublist
-					sublist = g_list_prepend(sublist, scan->data);
-					
-					// apply_ef rotation
-					data = gt_apply_ef(data);				
-					
-				} // for ef...
-				data = gt_apply_bd(data);
-				if(data == NULL) {
-					printf("bd returned NULL.\n");
-					exit(1);
-				} 			
-			} // for bd...
-			
-			data = gt_apply_ac(data);
-			
-			for(int ef = 0; ef < 4; ++ef) {					
-				// find equal transpose
-				scan = g_list_find_custom(InList, data, wrapper_equal_transpose);
-				if(scan == NULL) {
-					printf("1: Did not find transpose in InList.\n");
-					exit(1);
-				}
-					// unlink equal transpose
-					InList = g_list_remove_link(InList,scan);
-					
-					// save in sublist
-					sublist = g_list_prepend(sublist, scan->data);
-					
-					// apply_ef rotation
-					data = gt_apply_ef(data);				
-															
-			} // for ef...
-			
-			data = gt_apply_ac(data);
-			data = gt_apply_ac(data);
-			
-			for(int ef = 0; ef < 4; ++ef) {					
-				// find equal transpose
-				scan = g_list_find_custom(InList, data, wrapper_equal_transpose);
-				if(scan == NULL) {
-					printf("1: Did not find transpose in InList.\n");
-					exit(1);
-				}
-				// unlink equal transpose
-				InList = g_list_remove_link(InList,scan);
-				
-				// save in sublist
-				sublist = g_list_prepend(sublist, scan->data);
-				
-				// apply_ef rotation
-				data = gt_apply_ef(data);				
-												
-			} // for ef...
-			
-			// Restore initial config - have 24 configs
-			data = gt_apply_ac(data);
-			
-			// reflect
-			data = gt_apply_abcd(data);
-		} // for abcd...
-		
-		Groups = g_list_prepend(Groups, sublist);
-	}
-	
 
-	// output sublists
-	sublist = Groups;
-	while(sublist != NULL) {
-		printf("Sublist has %u elements.\n", g_list_length(sublist->data));
-		int index = 0;
-		scan = sublist->data;	// scan becomes head of GList
-		while(scan != NULL) {
-			prt_sigtrans(STPTR(scan), index++);
-			scan = g_list_next(scan);
+
+	
+	// Groups treated as array[nGroups][REFROTS] of SigTrans structures
+	
+	// Set up a workarea SigTrans
+	SigTrans *working = (SigTrans*)malloc(sizeof(SigTrans));	
+	
+	group_idx = 0;
+	do {
+		for(inlist_idx = 0; inlist_idx < len_inlist; ++inlist_idx) {
+			if( (InList + inlist_idx)->found == false) 	break;
 		}
-		sublist = g_list_next(sublist);
-	}
+		if(inlist_idx < len_inlist) {		
+			stp = InList + inlist_idx;		
+			// make a working copy of the base Tocta
+			memcpy(working, stp, sizeof(SigTrans));
+			family_idx = 0;
+			printf("group_idx = %u\n",group_idx);
+			// for each rotation
+			for(int abcd = 0; abcd < 2; ++abcd) {
+				for(int bd = 0; bd < 4; ++bd) {
+					for(int ef = 0; ef < 4; ++ef) {
+						//==================================================
+						// find equal transpose - returns index to InList
+						for(search_idx = 0; search_idx < len_inlist; ++search_idx)
+							if(((InList + search_idx)->found == false)&&
+								(equal_transpose(InList + search_idx, working) == 0)) break;
+						if(search_idx == len_inlist) {
+							printf("Failed to match SigTrans in InList.\n");
+							exit(1);
+						}			
+						// set found flag in inlist to 'true'
+						(InList + search_idx)->found = true;
+										
+						// memcpy(dest, source, bytes)
+						
+						memcpy((Groups + (group_idx*REFROTS) + family_idx++), (InList + search_idx), sizeof(SigTrans));
+						//==================================================
+						// apply_ef rotation
+						working = gt_apply_ef(working);				
+						
+					} // for ef...
+					working = gt_apply_bd(working);
+					if(working == NULL) {
+						printf("bd returned NULL.\n");
+						exit(1);
+					} 			
+				} // for bd...
+				
+				working = gt_apply_ac(working);
+				
+				for(int ef = 0; ef < 4; ++ef) {					
+					//==================================================
+					// find equal transpose - returns index to InList
+					for(search_idx = 0; search_idx < len_inlist; ++search_idx)
+						if(((InList + search_idx)->found == false)&&
+							(equal_transpose(InList + search_idx, working) == 0)) break;
+					if(search_idx == len_inlist) {
+						printf("Failed to match SigTrans in InList.\n");
+						exit(1);
+					}			
+					// set found flag in inlist to 'true'
+					(InList + search_idx)->found = true;
+									
+					// memcpy(dest, source, bytes)
+					
+					memcpy((Groups + (group_idx*REFROTS) + family_idx++), (InList + search_idx), sizeof(SigTrans));
+					//==================================================
+			
+					// apply_ef rotation
+					working = gt_apply_ef(working);				
+															
+				} // for ef...
+				
+				working = gt_apply_ac(working);
+				working = gt_apply_ac(working);
+				
+				for(int ef = 0; ef < 4; ++ef) {					
+					//==================================================
+					// find equal transpose - returns index to InList
+					for(search_idx = 0; search_idx < len_inlist; ++search_idx)
+						if(((InList + search_idx)->found == false)&&
+							(equal_transpose(InList + search_idx, working) == 0)) break;
+					if(search_idx == len_inlist) {
+						printf("Failed to match SigTrans in InList.\n");
+						exit(1);
+					}			
+					// set found flag in inlist to 'true'
+					(InList + search_idx)->found = true;
+									
+					// memcpy(dest, source, bytes)
+					
+					memcpy((Groups + (group_idx*REFROTS) + family_idx++), (InList + search_idx), sizeof(SigTrans));
+					//==================================================
+					
+					// apply_ef rotation
+					working = gt_apply_ef(working);				
+													
+				} // for ef...
+				
+				// Restore initial config - have 24 configs
+				working = gt_apply_ac(working);
+				
+				// reflect
+				working = gt_apply_abcd(working);
+			
+			} // for abcd...	
+
+		}		
+		group_idx++;
+	} while(group_idx < nGroups);
 	
-	printf("Groups has %u elements.\n", g_list_length(Groups));
-	
-	printf("InList has %u elements.\n", g_list_length(InList));
-		
-	// cleanup code
-	printf("Attempting to free memory.\n");
-	sublist = Groups;
-	while(sublist != NULL) {
-		scan = sublist->data;	// scan is now head of GList
-		while(scan != NULL) {
-			// free(scan);
-			scan = g_list_next(scan);
+	// output the Groups array
+	for(int row = 0; row < nGroups; ++row) {
+		for(int col = 0; col < REFROTS; ++col) {
+			prt_sigtrans( Groups + (row * REFROTS) + col, col);
 		}
-		sublist = g_list_next(sublist);
 	}
-	g_list_free(Groups);
-	
-	return 0;
+			
+	// Free memory
+	free(InList);
+	free(Groups);
+	free(working);
 }
 

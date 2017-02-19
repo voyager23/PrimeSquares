@@ -6,10 +6,10 @@
 
 CFLAGS = -Wall -std=c11 -ggdb -Wno-unused-variable -Wno-unused-result 
 
-all : ps ta gt lt
+all : ps ta gt lta
 
-lt : list_toctas.o lib_sym.o utilities.o ps1.h Rotations/symmetries.h
-	gcc list_toctas.o lib_sym.o utilities.o $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o lt
+lta : list_toctas.o lib_sym.o utilities.o ps1.h Rotations/symmetries.h
+	gcc list_toctas.o lib_sym.o utilities.o $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o lta
 
 ps : ps1.o utilities.o
 	gcc ps1.o utilities.o $(CFLAGS) `pkg-config --cflags --libs glib-2.0 ` -o ps 
