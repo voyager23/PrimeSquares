@@ -50,7 +50,7 @@ const double primes[] =
 1847, 1861, 1867, 1871, 1873, 1877, 1879, 1889, 1901, 1907, 1913, 1931, 
 1933, 1949, 1951, 1973, 1979, 1987, 1993, 1997, 1999 };
 
-
+#define QUIET 1
 
 //-----Main-----
 int main(int argc, char **argv)
@@ -59,15 +59,15 @@ int main(int argc, char **argv)
 	if(argc == 2) {
 		sscanf(argv[1], "%lf", &limit);
 	} else {
-		limit = 18.0;
+		limit = 16.0;
 	}
 	
 	printf("Limit: %0.0lf\n", limit);
 	
-	// exit(0);
 		
 	// limit 18 produces 48 blocks. Threaded scan (all cores) takes 3m 06s
 	// const double limit=14.0;	// sqrt(1000) = 31.622	use 14 for 28 blocks of data
+
 	double p,q,si,s;
 	int found = 0;
 	
@@ -189,6 +189,7 @@ int main(int argc, char **argv)
 				max_blk_size = blk_size;
 				// working points to end-of-block + 1
 				// blk_start points to head of block
+#if(!QUIET)
 				write_ptr = blk_start;
 				printf("Block size: %d\n{\n",blk_size);
 				while(write_ptr != working) {
@@ -196,11 +197,11 @@ int main(int argc, char **argv)
 					printf("{CMPLX(%.1f,%.1f),", creal(fps_ptr->p0), cimag(fps_ptr->p0));
 					printf("CMPLX(%.1f,%.1f),", creal(fps_ptr->p1), cimag(fps_ptr->p1));
 					printf("CMPLX(%.1f,%.1f),", creal(fps_ptr->p2), cimag(fps_ptr->p2));
-					printf("CMPLX(%.1f,%.1f)},\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));		
+					printf("CMPLX(%.1f,%.1f)},\n",  creal(fps_ptr->p3), cimag(fps_ptr->p3));
 					write_ptr = g_slist_next(write_ptr);					
 				} // while write_ptr
 				printf("}\n");
-				
+#endif			
 				// ----------Code to write block to disk file here----------
 				// For each block:
 				//		write number of rows of 4 gprimes as integer;
@@ -246,7 +247,7 @@ int main(int argc, char **argv)
 	fread(&in_blk_size, sizeof(int), 1, fin);
 	while(!(feof(fin))) {
 		++nBlocks;
-		printf("Block size: %d\n", in_blk_size);
+		printf("Block size: %d\t", in_blk_size);
 		for(int b = 0; b < in_blk_size; ++b) {
 			fread(in_buffer, sizeof(gprime), 4, fin);
 			//for(int a = 0; a < 4; ++a) prt_gprime(in_buffer[a]);
