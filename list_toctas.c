@@ -212,12 +212,20 @@ int main(int argc, char **argv)
 		group_idx++;
 	} while(group_idx < nGroups);
 	
+	// open an output file for base toctas
+	// bases/BaseToctas-9-31.dat
+	// Groups is an array of SigTrans*
+	
 	// output the Groups array
 	for(int row = 0; row < nGroups; ++row) {
 		for(int col = 0; col < REFROTS; ++col) {
+			// if col==o write sig_trans to file
+			// fwrite(SigTrans*, sizeof(SigTrans), 1, fbases)
 			prt_sigtrans( Groups + (row * REFROTS) + col, col);
 		}
 	}
+	// close file
+	// fclose(fbases)
 			
 	// Free memory
 	free(InList);
